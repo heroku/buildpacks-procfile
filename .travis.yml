@@ -7,7 +7,7 @@ go:
 script:
 - make test
 - make package
-- ls -alh cnb-shim-*.tgz
+- ls -alh procfile-cnb-*.tgz
 env:
   GO111MODULE: "on"
 deploy:
