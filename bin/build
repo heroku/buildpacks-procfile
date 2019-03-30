@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# fail hard
+set -o pipefail
+# fail harder
+set -eu
+
+layers_dir="${1:?}"
+platform_dir="${2:?}"
+
+# run bin/release, read Procfile, and generate launch.toml
+"${bp_dir}/bin/release" "$(pwd)" "${layers_dir}" "${platform_dir}"
