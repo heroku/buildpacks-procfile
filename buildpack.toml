@@ -1,0 +1,7 @@
+[buildpack]
+id = "heroku/procfile"
+version = "0.1"
+name = "Procfile"
+
+[[stacks]]
+id = "heroku-18"

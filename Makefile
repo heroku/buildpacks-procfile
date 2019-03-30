@@ -10,7 +10,7 @@ SHELL=/bin/bash -o pipefail
 
 GO111MODULE := on
 
-VERSION := "v0.0.1"
+VERSION := "v$$(cat buildpack.toml | grep version | sed -e 's/version = //g' | xargs)"
 
 build:
 	@GOOS=linux go build -o "bin/release" ./cmd/release/...
