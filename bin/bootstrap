@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# fail fast
+set -eo pipefail
+
+BP_DIR="${1:?}"
+
+install_go() {
+  local go_dir="${1:?}"
+  local go_tgz="$(mktemp /tmp/go.tgz.XXXXXX)"
+  curl --retry 3 -sf -o "$go_tgz" -L https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz
+
+  local expected_sha="2a3fdabf665496a0db5f41ec6af7a9b15a49fbe71a85a50ca38b1f13a103aeec"
+  local actual_sha="$(shasum -a 256 "$go_tgz" | awk '{ print $1 }')"
+  if [ "$expected_sha" != "$actual_sha" ]; then
+    echo "failed"
+    echo "Invalid checksum!"
+    echo "Expected => $expected_sha"
+    echo "Found    => $actual_sha"
+    exit 1
+  fi
+
+  tar -C "$go_dir" -xzf "$go_tgz"
+}
+
+build_cmd() {
+  local cmd=${1:?}
+  go build -o "bin/${cmd}" ./cmd/${cmd}/...
+  chmod +x "bin/${cmd}"
+}
+
+go_dir="$(mktemp -d)" # TODO put it in the cache
+install_go "$go_dir"
+
+export PATH="$PATH:${go_dir}/go/bin"
+
+cd "$BP_DIR"
+build_cmd "release"

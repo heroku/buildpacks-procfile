@@ -5,8 +5,15 @@ set -o pipefail
 # fail harder
 set -eu
 
+bp_dir="$(cd $(dirname $0)/..; pwd)" # absolute path
 layers_dir="${1:?}"
 platform_dir="${2:?}"
 
-# run bin/release, read Procfile, and generate launch.toml
+if [[ ! -f "$bp_dir/bin/release" ]]; then
+  echo "Bootstrapping buildpack binaries"
+  bash "$bp_dir/bin/bootstrap" "$bp_dir"
+  echo "Successfully compiled buildpack"
+fi
+
+# read Procfile and generate launch.toml
 "${bp_dir}/bin/release" "$(pwd)" "${layers_dir}" "${platform_dir}"
