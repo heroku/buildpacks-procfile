@@ -10,9 +10,9 @@ layers_dir="${1:?}"
 platform_dir="${2:?}"
 
 if [[ ! -f "$bp_dir/bin/release" ]]; then
-  echo "Bootstrapping buildpack binaries"
+  echo "-----> Bootstrapping Procfile buildpack"
   bash "$bp_dir/bin/bootstrap" "$bp_dir"
-  echo "Successfully compiled buildpack"
+  echo "       - done"
 fi
 
 # read Procfile and generate launch.toml

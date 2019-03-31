@@ -25,7 +25,7 @@ install_go() {
 
 build_cmd() {
   local cmd=${1:?}
-  go build -o "bin/${cmd}" ./cmd/${cmd}/...
+  go build -o "bin/${cmd}" ./cmd/${cmd}/... > /dev/null 2>&1
   chmod +x "bin/${cmd}"
 }
 

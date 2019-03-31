@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"strings"
 
 	"github.com/buildpack/libbuildpack/logger"
 	"github.com/heroku/procfile-cnb"
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if len(os.Args) != 4 {
-		fmt.Println("Usage:", os.Args[0], "TARGET_BUILDPACK_DIR", "LAYERS_DIR", "PLATFORM_DIR")
+		fmt.Println("Usage:", os.Args[0], "APP_DIR", "LAYERS_DIR", "PLATFORM_DIR")
 		return
 	}
 
@@ -21,18 +21,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	targetDir := os.Args[1]
+	log.Info("-----> Discovering process types")
+	appDir := os.Args[1]
 	layersDir := os.Args[2]
 
-	appDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Info(err.Error())
-		os.Exit(2)
-	}
-
-	err = releaser.WriteLaunchMetadata(appDir, layersDir, targetDir, log)
+	processes, err := releaser.WriteLaunchMetadata(appDir, layersDir, log)
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(3)
 	}
+
+	processNames := []string{}
+	if len(processes) > 0 {
+		for _, process := range processes {
+			processNames = append(processNames, process.Type)
+		}
+	} else {
+		processNames = append(processNames, "(none)")
+	}
+
+	log.Info("       Procfile declares types     -> %s", strings.Join(processNames, ", "))
 }
