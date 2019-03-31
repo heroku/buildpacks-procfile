@@ -23,7 +23,7 @@ clean:
 	-rm -f bin/release
 
 package: clean build
-	@tar cvzf procfile-cnb-$(VERSION).tgz bin/ README.md LICENSE
+	@tar cvzf procfile-cnb-$(VERSION).tgz bin/ README.md LICENSE buildpack.toml
 
 release:
 	@git tag $(VERSION)
