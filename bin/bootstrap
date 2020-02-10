@@ -4,6 +4,7 @@
 set -eo pipefail
 
 BP_DIR="${1:?}"
+LAYER_DIR="${2:?}"
 
 install_go() {
   local go_dir="${1:?}"
@@ -25,8 +26,9 @@ install_go() {
 
 build_cmd() {
   local cmd=${1:?}
-  go build -o "bin/${cmd}" ./cmd/${cmd}/... > /dev/null 2>&1
-  chmod +x "bin/${cmd}"
+  mkdir -p "${LAYER_DIR}/bin"
+  go build -o "${LAYER_DIR}/bin/${cmd}" ./cmd/${cmd}/... > /dev/null 2>&1
+  chmod +x "${LAYER_DIR}/bin/${cmd}"
 }
 
 go_dir="$(mktemp -d)" # TODO put it in the cache
