@@ -1,4 +1,4 @@
-name: Buildpackage
+name: Release
 on:
     release:
         types:
@@ -19,31 +19,26 @@ jobs:
                 registry: docker.io
                 username: ${{ secrets.DOCKER_HUB_USER }}
                 password: ${{ secrets.DOCKER_HUB_PASS }}
-            - id: pack
-              name: Setup Pack CLI
-              uses: buildpacks/github-actions/setup-pack
-              with:
-                version: "0.14.1"
-            - id: package
+            - id: setup-pack
               name: Package Buildpack
+              uses: buildpacks/github-actions/setup-pack@v4.0.0
+            - id: package
               run: |
                 #!/usr/bin/env bash
                 set -euo pipefail
-
                 VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
                 pack package-buildpack --config package.toml --publish ${PACKAGE}:${VERSION}
                 DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
-
                 echo "::set-output name=version::$VERSION"
-                echo "::set-output name=digest::$DIGEST"
+                echo "::set-output name=address::${PACKAGE}@${DIGEST}"
               shell: bash
               env:
                 PACKAGE: docker.io/heroku/procfile-cnb
             - id: register
               name: Register Buildpack
-              uses: docker://ghcr.io/buildpacks/actions/registry
+              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
-                id:      heroku/procfile
+                id:      jkutner/minecraft
                 version: ${{ steps.package.outputs.version }}
-                address: docker.io/heroku/procfile-cnb@${{ steps.package.outputs.digest }}
+                address: ${{ steps.package.outputs.address }}
