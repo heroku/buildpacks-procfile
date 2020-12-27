@@ -20,9 +20,10 @@ jobs:
                 username: ${{ secrets.DOCKER_HUB_USER }}
                 password: ${{ secrets.DOCKER_HUB_PASS }}
             - id: setup-pack
-              name: Package Buildpack
+              name: Install Pack
               uses: buildpacks/github-actions/setup-pack@v4.0.0
             - id: package
+              name: Create and Publish Buildpackage
               run: |
                 #!/usr/bin/env bash
                 set -euo pipefail
