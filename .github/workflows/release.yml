@@ -40,6 +40,6 @@ jobs:
               uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
-                id:      jkutner/minecraft
+                id:      heroku/procfile
                 version: ${{ steps.package.outputs.version }}
                 address: ${{ steps.package.outputs.address }}
