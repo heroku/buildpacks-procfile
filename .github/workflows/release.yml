@@ -27,7 +27,7 @@ jobs:
                 #!/usr/bin/env bash
                 set -euo pipefail
                 VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
-                pack package-buildpack --config package.toml --publish ${PACKAGE}:${VERSION}
+                pack package-buildpack --publish ${PACKAGE}:${VERSION}
                 DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
                 echo "::set-output name=version::$VERSION"
                 echo "::set-output name=address::${PACKAGE}@${DIGEST}"
