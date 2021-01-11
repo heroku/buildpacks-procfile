@@ -19,11 +19,21 @@ jobs:
                 registry: docker.io
                 username: ${{ secrets.DOCKER_HUB_USER }}
                 password: ${{ secrets.DOCKER_HUB_PASS }}
+            - uses: actions/setup-go@v2
+              with:
+                go-version: '^1.12.1'
             - id: setup-pack
               name: Install Pack
               uses: buildpacks/github-actions/setup-pack@v4.0.0
+            - id: compile
+              name: Compile Buildpack
+              run: |
+                #!/usr/bin/env bash
+                set -euo pipefail
+                make build
+                make test
             - id: package
-              name: Create and Publish Buildpackage
+              name: Package Buildpack
               run: |
                 #!/usr/bin/env bash
                 set -euo pipefail
