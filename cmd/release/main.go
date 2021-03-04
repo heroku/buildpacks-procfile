@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("-----> Discovering process types")
+	log.Info("[INFO] Discovering process types")
 	appDir := os.Args[1]
 	layersDir := os.Args[2]
 
@@ -40,5 +40,5 @@ func main() {
 		processNames = append(processNames, "(none)")
 	}
 
-	log.Info("       Procfile declares types     -> %s", strings.Join(processNames, ", "))
+	log.Info("[INFO] Procfile declares types -> %s", strings.Join(processNames, ", "))
 }
