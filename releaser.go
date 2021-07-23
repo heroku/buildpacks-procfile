@@ -5,18 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/BurntSushi/toml"
 	"gopkg.in/yaml.v2"
 
-	"github.com/buildpack/libbuildpack/layers"
-	"github.com/buildpack/libbuildpack/logger"
+	cnb "github.com/buildpacks/libcnb"
 )
 
 type Release struct {
 	DefaultProcessTypes map[string]string `yaml:"default_process_types,omitempty"`
 }
 
-func WriteLaunchMetadata(appDir, layersDir string, log logger.Logger) (layers.Processes, error) {
-	processes := layers.Processes{}
+func WriteLaunchMetadata(appDir, layersDir string) ([]cnb.Process, error) {
+	processes := []cnb.Process{}
 
 	procfile, err := ReadProcfile(appDir)
 	if err != nil {
@@ -29,17 +29,29 @@ func WriteLaunchMetadata(appDir, layersDir string, log logger.Logger) (layers.Pr
 	}
 
 	for name, command := range processTypes {
-		processes = append(processes, layers.Process{
+		processes = append(processes, cnb.Process{
 			Type:    name,
 			Command: command,
+			Default: name == "web",
 		})
 	}
 
-	l := layers.NewLayers(layersDir, log)
+	err = os.MkdirAll(layersDir, 0755)
+	if err != nil {
+		return processes, err
+	}
 
-	return processes, l.WriteApplicationMetadata(layers.Metadata{
+	launch := cnb.LaunchTOML{
 		Processes: processes,
-	})
+	}
+
+	f, err := os.Create(filepath.Join(layersDir, "launch.toml"))
+	if err != nil {
+		return processes, err
+	}
+	defer f.Close()
+
+	return processes, toml.NewEncoder(f).Encode(launch)
 }
 
 func ReadProcfile(appDir string) (map[string]string, error) {
