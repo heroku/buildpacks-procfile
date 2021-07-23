@@ -32,7 +32,7 @@ func WriteLaunchMetadata(appDir, layersDir string) ([]cnb.Process, error) {
 		processes = append(processes, cnb.Process{
 			Type:    name,
 			Command: command,
-			Default: name == "web",
+			Default: name == "web" || len(processTypes) == 1,
 		})
 	}
 
