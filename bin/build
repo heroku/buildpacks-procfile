@@ -5,20 +5,19 @@ set -o pipefail
 # fail harder
 set -eu
 
-bp_dir="$(cd $(dirname $0)/..; pwd)" # absolute path
 layers_dir="${1:?}"
 platform_dir="${2:?}"
 
 # shellcheck source=/dev/null
-source "$bp_dir/lib/utils/log.sh"
+source "$CNB_BUILDPACK_DIR/lib/utils/log.sh"
 
-release_bin="${bp_dir}/bin/release"
+release_bin="${CNB_BUILDPACK_DIR}/bin/release"
 if [[ ! -f "$release_bin" ]]; then
   info "Bootstrapping Procfile buildpack"
   bootstrap_layer_dir="${layers_dir}/bootstrap"
   mkdir -p "${bootstrap_layer_dir}"
   echo "launch = false" > "${bootstrap_layer_dir}.toml"
-  bash "$bp_dir/bin/bootstrap" "$bp_dir" "$bootstrap_layer_dir"
+  bash "$CNB_BUILDPACK_DIR/bin/bootstrap" "$CNB_BUILDPACK_DIR" "$bootstrap_layer_dir"
   release_bin="${bootstrap_layer_dir}/bin/release"
   info "done"
 fi
