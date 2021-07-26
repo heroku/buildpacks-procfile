@@ -23,7 +23,7 @@ clean:
 	-rm -f bin/release
 
 package: clean build
-	@tar cvzf procfile-cnb-$(VERSION).tgz bin/ lib/ README.md LICENSE buildpack.toml
+	@pack buildpack package --format=file heroku_procfile_$(VERSION).cnb
 
 release:
 	@git tag $(VERSION)

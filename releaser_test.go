@@ -2,14 +2,12 @@ package releaser_test
 
 import (
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/buildpack/libbuildpack/layers"
-	"github.com/buildpack/libbuildpack/logger"
-	"github.com/heroku/procfile-cnb"
 	"github.com/BurntSushi/toml"
+	cnb "github.com/buildpacks/libcnb"
+	"github.com/heroku/procfile-cnb"
 )
 
 func TestReadProcfileWithWebAndWorker(t *testing.T) {
@@ -59,12 +57,11 @@ func TestWriteLaunchMetadata(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	log, err := logger.DefaultLogger(os.TempDir())
 	if err != nil {
 		t.Error(err.Error())
 	}
 
-	processes, err := releaser.WriteLaunchMetadata(app, layersDir, log)
+	processes, err := releaser.WriteLaunchMetadata(app, layersDir)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -72,7 +69,7 @@ func TestWriteLaunchMetadata(t *testing.T) {
 	assertProcessTypes(t, processes[0])
 	assertProcessTypes(t, processes[1])
 
-	l := layers.Metadata{}
+	l := cnb.LaunchTOML{}
 
 	_, err = toml.DecodeFile(filepath.Join(layersDir, "launch.toml"), &l)
 	if err != nil {
@@ -87,7 +84,7 @@ func TestWriteLaunchMetadata(t *testing.T) {
 	assertProcessTypes(t, l.Processes[1])
 }
 
-func assertProcessTypes(t *testing.T, processType layers.Process) {
+func assertProcessTypes(t *testing.T, processType cnb.Process) {
 	if processType.Type == "web" {
 		expected := "node index.js"
 		if processType.Command != expected {
