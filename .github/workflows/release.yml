@@ -39,7 +39,7 @@ jobs:
                 BP_ID="$(cat buildpack.toml | yj -t | jq -r .buildpack.id)"
                 VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
                 ESCAPED_ID="$(echo "$BP_ID" | sed 's/\//_/g')"
-                PACKAGE="${REPO}/${ESCAPED_ID}"
+                PACKAGE="${REPO}"
                 pack buildpack package --publish ${PACKAGE}:${VERSION}
                 pack buildpack package --format file ${ESCAPED_ID}_${VERSION}.cnb
                 DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
