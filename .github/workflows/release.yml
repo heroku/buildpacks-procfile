@@ -24,7 +24,7 @@ jobs:
                 go-version: '^1.12.1'
             - id: setup-pack
               name: Install Pack
-              uses: buildpacks/github-actions/setup-pack@v4.0.0
+              uses: buildpacks/github-actions/setup-pack@v4.2.0
             - id: compile
               name: Compile Buildpack
               run: |
@@ -47,7 +47,7 @@ jobs:
                 PACKAGE: docker.io/heroku/procfile-cnb
             - id: register
               name: Register Buildpack
-              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
+              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.2.0
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
                 id:      heroku/procfile
