@@ -2,7 +2,7 @@ api = "0.6"
 
 [buildpack]
 id = "heroku/procfile"
-version = "0.7.0"
+version = "0.7.1"
 name = "Procfile"
 
 [[stacks]]
