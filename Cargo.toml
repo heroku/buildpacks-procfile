@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 libcnb = "0.2.0"
+yaml-rust = "0.4"
