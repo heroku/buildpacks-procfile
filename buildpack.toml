@@ -1,0 +1,21 @@
+api = "0.4"
+
+[buildpack]
+id = "ultra basic rust invoker"
+version = "0.0.0"
+name = "ultra basic rust invoker"
+
+[[licenses]]
+type = "MIT"
+
+[[stacks]]
+id = "heroku-18"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"
+
+[metadata]
+
