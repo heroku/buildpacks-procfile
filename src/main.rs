@@ -1,13 +1,33 @@
-use libcnb::data::build_plan::BuildPlan;
-use libcnb::data::launch::{Launch, Process};
+use libcnb::{
+    cnb_runtime,
+    data::{
+        build_plan::BuildPlan,
+        launch::{Launch, Process},
+    },
+    DetectOutcome, GenericBuildContext, GenericDetectContext, GenericErrorHandler,
+};
 use std::path::PathBuf;
-
 use yaml_rust::YamlLoader;
 
-use libcnb::{
-    cnb_runtime, DetectOutcome, GenericBuildContext, GenericDetectContext, GenericErrorHandler,
-    Result,
-};
+#[derive(thiserror::Error, Debug)]
+pub enum BuildpackError {
+    #[error("IO Error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("Procfile YAML Parsing Error: {0}")]
+    YamlScan(#[from] yaml_rust::scanner::ScanError),
+    #[error("Procfile is not in a valid format: {0}")]
+    Procfile(&'static str),
+    #[error("Invalid ProcessType name: {0}")]
+    ProcessType(#[from] libcnb::data::launch::ProcessTypeError),
+    #[error("TOML Error: {0}")]
+    Toml(#[from] libcnb::TomlFileError),
+}
+
+impl From<BuildpackError> for libcnb::Error<BuildpackError> {
+    fn from(error: BuildpackError) -> Self {
+        Self::BuildpackError(error)
+    }
+}
 
 // Main entrypoint, the `cnb_runtime` produces a single binary
 // that will call either `detect` or `build` functions based on the name of the
@@ -17,7 +37,7 @@ fn main() {
 }
 
 // Code for `bin/detect`
-fn detect(context: GenericDetectContext) -> Result<DetectOutcome, std::io::Error> {
+fn detect(context: GenericDetectContext) -> Result<DetectOutcome, libcnb::Error<BuildpackError>> {
     let procfile_path = context.app_dir.join("Procfile");
 
     if procfile_path.exists() {
@@ -29,24 +49,34 @@ fn detect(context: GenericDetectContext) -> Result<DetectOutcome, std::io::Error
 }
 
 // Code for `bin/build`
-fn build(context: GenericBuildContext) -> Result<(), std::io::Error> {
+fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<BuildpackError>> {
     let launch = launch_from_procfile(context.app_dir.join("Procfile"))?;
 
-    context.write_launch(launch).unwrap();
+    context
+        .write_launch(launch)
+        .map_err(|e| BuildpackError::from(e))?;
     Ok(())
 }
 
 // Bulk of logic extracted for testing
-fn launch_from_procfile(procfile: PathBuf) -> Result<libcnb::data::launch::Launch, std::io::Error> {
+fn launch_from_procfile(procfile: PathBuf) -> Result<libcnb::data::launch::Launch, BuildpackError> {
     let procfile_path = procfile.to_str().unwrap();
-    let procfile_contents = std::fs::read_to_string(procfile_path).unwrap();
-    let contents = YamlLoader::load_from_str(&procfile_contents).unwrap();
+    let procfile_contents = std::fs::read_to_string(procfile_path)?;
+    let contents = YamlLoader::load_from_str(&procfile_contents)?;
 
     let mut launch = Launch::new();
-    for (key, value) in &*contents[0].as_hash().unwrap() {
+    let processes = contents[0]
+        .as_hash()
+        .ok_or(BuildpackError::Procfile("Not a valid YAML Hash"))?;
+    for (key, value) in processes {
         let p = Process::new(
-            key.as_str().unwrap(),
-            value.as_str().unwrap(),
+            key.as_str().ok_or(BuildpackError::Procfile(
+                "process type name is an empty string",
+            ))?,
+            // TODO: Split this into separate args
+            value.as_str().ok_or(BuildpackError::Procfile(
+                "process command is an empty string",
+            ))?,
             Vec::<String>::new(),
             false,
         )?;
@@ -127,8 +157,8 @@ mod tests {
         let layers_dir = layers_temp.path().to_owned();
 
         let context = BuildContext {
-            layers_dir: layers_dir,
-            app_dir: app_dir,
+            layers_dir,
+            app_dir,
             buildpack_dir: PathBuf::new(),
             stack_id: String::from("lol"),
             platform: GenericPlatform::from_path(bp_dir).unwrap(),
@@ -153,7 +183,7 @@ mod tests {
         };
         TempContext {
             _tmp_dirs: vec![bp_temp, app_temp, layers_temp],
-            context: context,
+            context,
         }
     }
 
