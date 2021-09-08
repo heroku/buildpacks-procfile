@@ -56,11 +56,9 @@ mod tests {
     use super::*;
     use std::env;
     use std::fs;
-    use std::fs::read_to_string;
     use std::path::PathBuf;
     use std::str::FromStr;
 
-    use libcnb::data::build;
     use tempfile::{tempdir, TempDir};
 
     use libcnb::{BuildContext, GenericPlatform, Platform};
@@ -69,6 +67,42 @@ mod tests {
         buildpack::BuildpackToml, buildpack_plan::BuildpackPlan, buildpack_plan::Entry,
         launch::ProcessType,
     };
+
+    #[test]
+    fn test_build() {
+        let tmp_context = make_temp_context();
+        let context = tmp_context.context;
+        let launch_toml_path = context.layers_dir.join("launch.toml");
+
+        fs::write(context.app_dir.join("Procfile"), "web: bundle exec rails s").unwrap();
+        build(context).unwrap();
+
+        let layer_toml_string = fs::read_to_string(launch_toml_path).unwrap();
+        let layer_toml= toml::from_str::<toml::value::Table>(&layer_toml_string).unwrap();
+        let processes = layer_toml["processes"].as_array().unwrap();
+        let process = &processes[0];
+
+        assert_eq!("web", process["type"].as_str().unwrap());
+        assert_eq!("bundle exec rails s", process["command"].as_str().unwrap());
+        assert_eq!(1, processes.len());
+    }
+
+    #[test]
+    fn test_launch_from_procfile() {
+        let launch = launch_from_procfile(procfile_fixture_path("app_with_procfile")).unwrap();
+
+        assert_eq!(
+            ProcessType::from_str("web").unwrap().as_str(),
+            launch.processes[0].r#type.as_str()
+        );
+        assert_eq!("node index.js", launch.processes[0].command);
+        assert_eq!(
+            ProcessType::from_str("worker").unwrap().as_str(),
+            launch.processes[1].r#type.as_str()
+        );
+
+        assert_eq!("node worker.js", launch.processes[1].command);
+    }
 
     struct TempContext {
         // Hold reference to temp dirs so they're not cleaned off disk
@@ -80,14 +114,14 @@ mod tests {
     fn make_temp_context() -> TempContext {
         let bp_temp = tempdir().unwrap();
         let app_temp = tempdir().unwrap();
-        let layer_temp = tempdir().unwrap();
+        let layers_temp = tempdir().unwrap();
 
         let bp_dir = bp_temp.path().to_owned();
         let app_dir = app_temp.path().to_owned();
-        let layer_dir = layer_temp.path().to_owned();
+        let layers_dir = layers_temp.path().to_owned();
 
         let context = BuildContext {
-            layers_dir: layer_dir,
+            layers_dir: layers_dir,
             app_dir: app_dir,
             buildpack_dir: PathBuf::new(),
             stack_id: String::from("lol"),
@@ -112,85 +146,9 @@ mod tests {
             .unwrap(),
         };
         TempContext {
-            _tmp_dirs: vec![bp_temp, app_temp, layer_temp],
+            _tmp_dirs: vec![bp_temp, app_temp, layers_temp],
             context: context,
         }
-    }
-
-    #[test]
-    fn test_foo() {
-        let tmp_context = make_temp_context();
-        let context = tmp_context.context;
-
-        fs::write(context.app_dir.join("Procfile"), "web: bundle exec rails s").unwrap();
-
-        build(context);
-    }
-
-    #[test]
-    fn test_build() {
-        let bp_temp = tempdir().unwrap();
-        let app_temp = tempdir().unwrap();
-        let layer_temp = tempdir().unwrap();
-
-        let bp_dir = bp_temp.path();
-        let app_dir = app_temp.path();
-        let layer_dir = layer_temp.path();
-
-        fs::write(app_dir.join("Procfile"), "web: bundle exec rails s").unwrap();
-
-        build(BuildContext {
-            layers_dir: layer_dir.to_path_buf(),
-            app_dir: app_dir.to_path_buf(),
-            buildpack_dir: PathBuf::new(),
-            stack_id: String::from("lol"),
-            platform: GenericPlatform::from_path(bp_dir).unwrap(),
-            buildpack_plan: BuildpackPlan {
-                entries: Vec::<Entry>::new(),
-            },
-            buildpack_descriptor: toml::from_str::<BuildpackToml<Option<toml::value::Table>>>(
-                r#"
-api = "0.4"
-
-[buildpack]
-id = "foo/bar"
-name = "Bar Buildpack"
-version = "0.0.1"
-
-[[stacks]]
-id = "io.buildpacks.stacks.bionic"
-
-            "#,
-            )
-            .unwrap(),
-        })
-        .unwrap();
-
-        let layer_toml = fs::read_to_string(layer_dir.join("launch.toml")).unwrap();
-        let result = toml::from_str::<toml::value::Table>(&layer_toml).unwrap();
-        let processes = result["processes"].as_array().unwrap();
-        let process = &processes[0];
-
-        assert_eq!("web", process["type"].as_str().unwrap());
-        assert_eq!("bundle exec rails s", process["command"].as_str().unwrap());
-        assert_eq!(1, processes.len());
-    }
-
-    #[test]
-    fn test_launch_from_procfile() {
-        let launch = launch_from_procfile(procfile_fixture_path("app_with_procfile")).unwrap();
-
-        assert_eq!(
-            ProcessType::from_str("web").unwrap().as_str(),
-            launch.processes[0].r#type.as_str()
-        );
-        assert_eq!("node index.js", launch.processes[0].command);
-        assert_eq!(
-            ProcessType::from_str("worker").unwrap().as_str(),
-            launch.processes[1].r#type.as_str()
-        );
-
-        assert_eq!("node worker.js", launch.processes[1].command);
     }
 
     fn procfile_fixture_path(fixture_name: &str) -> PathBuf {
