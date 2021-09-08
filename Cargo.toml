@@ -9,3 +9,7 @@ edition = "2018"
 [dependencies]
 libcnb = "0.2.0"
 yaml-rust = "0.4"
+
+[dev-dependencies]
+tempfile = "^3.2.0"
+toml = "^0.5.8"
