@@ -56,23 +56,76 @@ mod tests {
     use super::*;
     use std::env;
     use std::fs;
+    use std::fs::read_to_string;
     use std::path::PathBuf;
     use std::str::FromStr;
 
-    use tempfile::tempdir;
+    use libcnb::data::build;
+    use tempfile::{tempdir, TempDir};
 
-    use libcnb::{
-        Platform,
-        GenericPlatform,
-        BuildContext,
-    };
+    use libcnb::{BuildContext, GenericPlatform, Platform};
 
     use libcnb::data::{
-        buildpack_plan::BuildpackPlan, 
-        buildpack_plan::Entry, 
+        buildpack::BuildpackToml, buildpack_plan::BuildpackPlan, buildpack_plan::Entry,
         launch::ProcessType,
-        buildpack::BuildpackToml,
     };
+
+    struct TempContext {
+        // Hold reference to temp dirs so they're not cleaned off disk
+        // https://heroku.slack.com/archives/CFF88C0HM/p1631124162001800
+        _tmp_dirs: Vec<TempDir>,
+        context: GenericBuildContext,
+    }
+
+    fn make_temp_context() -> TempContext {
+        let bp_temp = tempdir().unwrap();
+        let app_temp = tempdir().unwrap();
+        let layer_temp = tempdir().unwrap();
+
+        let bp_dir = bp_temp.path().to_owned();
+        let app_dir = app_temp.path().to_owned();
+        let layer_dir = layer_temp.path().to_owned();
+
+        let context = BuildContext {
+            layers_dir: layer_dir,
+            app_dir: app_dir,
+            buildpack_dir: PathBuf::new(),
+            stack_id: String::from("lol"),
+            platform: GenericPlatform::from_path(bp_dir).unwrap(),
+            buildpack_plan: BuildpackPlan {
+                entries: Vec::<Entry>::new(),
+            },
+            buildpack_descriptor: toml::from_str::<BuildpackToml<Option<toml::value::Table>>>(
+                r#"
+    api = "0.4"
+
+    [buildpack]
+    id = "foo/bar"
+    name = "Bar Buildpack"
+    version = "0.0.1"
+
+    [[stacks]]
+    id = "io.buildpacks.stacks.bionic"
+
+            "#,
+            )
+            .unwrap(),
+        };
+        TempContext {
+            _tmp_dirs: vec![bp_temp, app_temp, layer_temp],
+            context: context,
+        }
+    }
+
+    #[test]
+    fn test_foo() {
+        let tmp_context = make_temp_context();
+        let context = tmp_context.context;
+
+        fs::write(context.app_dir.join("Procfile"), "web: bundle exec rails s").unwrap();
+
+        build(context);
+    }
 
     #[test]
     fn test_build() {
@@ -92,7 +145,9 @@ mod tests {
             buildpack_dir: PathBuf::new(),
             stack_id: String::from("lol"),
             platform: GenericPlatform::from_path(bp_dir).unwrap(),
-            buildpack_plan: BuildpackPlan { entries: Vec::<Entry>::new() },
+            buildpack_plan: BuildpackPlan {
+                entries: Vec::<Entry>::new(),
+            },
             buildpack_descriptor: toml::from_str::<BuildpackToml<Option<toml::value::Table>>>(
                 r#"
 api = "0.4"
@@ -105,8 +160,11 @@ version = "0.0.1"
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
 
-            "#).unwrap(),
-        }).unwrap();
+            "#,
+            )
+            .unwrap(),
+        })
+        .unwrap();
 
         let layer_toml = fs::read_to_string(layer_dir.join("launch.toml")).unwrap();
         let result = toml::from_str::<toml::value::Table>(&layer_toml).unwrap();
