@@ -24,17 +24,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "example-01-basics"
-version = "0.1.0"
-dependencies = [
- "libcnb",
- "tempfile",
- "thiserror",
- "toml",
- "yaml-rust",
-]
-
-[[package]]
 name = "getrandom"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -96,6 +85,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
 dependencies = [
  "unicode-xid",
+]
+
+[[package]]
+name = "procfile-buildpack"
+version = "0.1.0"
+dependencies = [
+ "libcnb",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "yaml-rust",
 ]
 
 [[package]]
