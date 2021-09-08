@@ -9,10 +9,14 @@ use libcnb::{
     Result,
 };
 
+// Main entrypoint, the `cnb_runtime` produces a single binary
+// that will call either `detect` or `build` functions based on the name of the
+// binary file.
 fn main() {
     cnb_runtime(detect, build, GenericErrorHandler);
 }
 
+// Code for `bin/detect`
 fn detect(context: GenericDetectContext) -> Result<DetectOutcome, std::io::Error> {
     let procfile_path = context.app_dir.join("Procfile");
 
@@ -24,6 +28,7 @@ fn detect(context: GenericDetectContext) -> Result<DetectOutcome, std::io::Error
     }
 }
 
+// Code for `bin/build`
 fn build(context: GenericBuildContext) -> Result<(), std::io::Error> {
     let launch = launch_from_procfile(context.app_dir.join("Procfile"))?;
 
@@ -31,6 +36,7 @@ fn build(context: GenericBuildContext) -> Result<(), std::io::Error> {
     Ok(())
 }
 
+// Bulk of logic extracted for testing
 fn launch_from_procfile(procfile: PathBuf) -> Result<libcnb::data::launch::Launch, std::io::Error> {
     let procfile_path = procfile.to_str().unwrap();
     let procfile_contents = std::fs::read_to_string(procfile_path).unwrap();
@@ -78,7 +84,7 @@ mod tests {
         build(context).unwrap();
 
         let layer_toml_string = fs::read_to_string(launch_toml_path).unwrap();
-        let layer_toml= toml::from_str::<toml::value::Table>(&layer_toml_string).unwrap();
+        let layer_toml = toml::from_str::<toml::value::Table>(&layer_toml_string).unwrap();
         let processes = layer_toml["processes"].as_array().unwrap();
         let process = &processes[0];
 
