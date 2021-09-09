@@ -8,7 +8,8 @@ use yaml_rust::YamlLoader;
 
 /// `bin/build`
 pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<BuildpackError>> {
-    let launch = launch_from_procfile(context.app_dir.join("Procfile"))?;
+    let mut launch = Launch::new();
+    launch.processes = parse_procfile(context.app_dir.join("Procfile"))?;
 
     context
         .write_launch(launch)
@@ -16,33 +17,34 @@ pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<Buildpack
     Ok(())
 }
 
-/// Build processes table for `libcnb::data::launch::Launch`
-fn launch_from_procfile(procfile: PathBuf) -> Result<libcnb::data::launch::Launch, BuildpackError> {
+/// Parse processes from `Procfile`
+fn parse_procfile(procfile: PathBuf) -> Result<Vec<Process>, BuildpackError> {
     let procfile_path = procfile.to_str().unwrap();
     let procfile_contents = std::fs::read_to_string(procfile_path)?;
     let contents = YamlLoader::load_from_str(&procfile_contents)?;
 
-    let mut launch = Launch::new();
     let processes = contents[0]
         .as_hash()
         .ok_or(BuildpackError::Procfile("Not a valid YAML Hash"))?;
-    for (key, value) in processes {
-        let p = Process::new(
-            key.as_str().ok_or(BuildpackError::Procfile(
-                "process type name is an empty string",
-            ))?,
-            // TODO: Split this into separate args
-            value.as_str().ok_or(BuildpackError::Procfile(
-                "process command is an empty string",
-            ))?,
-            Vec::<String>::new(),
-            false,
-        )?;
 
-        launch.processes.push(p);
-    }
+    processes
+        .into_iter()
+        .map(|(key, value)| {
+            let process = Process::new(
+                key.as_str().ok_or(BuildpackError::Procfile(
+                    "process type name is an empty string",
+                ))?,
+                // TODO: Split this into separate args
+                value.as_str().ok_or(BuildpackError::Procfile(
+                    "process command is an empty string",
+                ))?,
+                Vec::<String>::new(),
+                false,
+            )?;
 
-    Ok(launch)
+            Ok(process)
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -79,22 +81,22 @@ mod tests {
     }
 
     #[test]
-    fn test_launch_from_procfile() {
-        let launch = launch_from_procfile(procfile_fixture_path("app_with_procfile")).unwrap();
+    fn test_parse_procfile() {
+        let processes = parse_procfile(procfile_fixture_path("app_with_procfile")).unwrap();
 
         assert_eq!(
             ProcessType::from_str("web").unwrap().as_str(),
-            launch.processes[0].r#type.as_str()
+            processes[0].r#type.as_str()
         );
-        assert_eq!("node index.js", launch.processes[0].command);
+        assert_eq!("node index.js", processes[0].command);
         assert_eq!(
             ProcessType::from_str("worker").unwrap().as_str(),
-            launch.processes[1].r#type.as_str()
+            processes[1].r#type.as_str()
         );
 
         assert_eq!(
             "while true; do echo 'lol'; sleep 2; done",
-            launch.processes[1].command
+            processes[1].command
         );
     }
 
