@@ -1,15 +1,17 @@
 [package]
-name = "example-01-basics"
+name = "procfile-buildpack"
 version = "0.1.0"
-authors = ["Manuel Fuchs <malax@malax.de>"]
+authors = ["Richard Schneeman <richard.schneeman@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 libcnb = "0.2.0"
+thiserror = "1.0"
 yaml-rust = "0.4"
 
 [dev-dependencies]
+assert_matches = "1.5.0"
 tempfile = "^3.2.0"
 toml = "^0.5.8"

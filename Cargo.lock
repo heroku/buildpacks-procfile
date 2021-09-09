@@ -12,6 +12,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "assert_matches"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -22,16 +28,6 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
-
-[[package]]
-name = "example-01-basics"
-version = "0.1.0"
-dependencies = [
- "libcnb",
- "tempfile",
- "toml",
- "yaml-rust",
-]
 
 [[package]]
 name = "getrandom"
@@ -95,6 +91,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
 dependencies = [
  "unicode-xid",
+]
+
+[[package]]
+name = "procfile-buildpack"
+version = "0.1.0"
+dependencies = [
+ "assert_matches",
+ "libcnb",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "yaml-rust",
 ]
 
 [[package]]
