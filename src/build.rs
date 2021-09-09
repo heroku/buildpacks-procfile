@@ -48,10 +48,7 @@ fn launch_from_procfile(procfile: PathBuf) -> Result<libcnb::data::launch::Launc
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
-    use std::fs;
-    use std::path::PathBuf;
-    use std::str::FromStr;
+    use std::{env, fs, path::PathBuf, str::FromStr};
 
     use tempfile::{tempdir, TempDir};
 
@@ -95,7 +92,10 @@ mod tests {
             launch.processes[1].r#type.as_str()
         );
 
-        assert_eq!("node worker.js", launch.processes[1].command);
+        assert_eq!(
+            "while true; do echo 'lol'; sleep 2; done",
+            launch.processes[1].command
+        );
     }
 
     struct TempContext {
@@ -146,8 +146,8 @@ mod tests {
     }
 
     fn procfile_fixture_path(fixture_name: &str) -> PathBuf {
-        let path = env::current_dir().unwrap();
-        path.join("../test/fixtures")
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("test/fixtures")
             .join(fixture_name)
             .join("Procfile")
     }
