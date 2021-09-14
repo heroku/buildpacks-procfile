@@ -11,9 +11,7 @@ pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<Buildpack
     let mut launch = Launch::new();
     launch.processes = parse_procfile(context.app_dir.join("Procfile"))?;
 
-    context
-        .write_launch(launch)
-        .map_err(|e| BuildpackError::from(e))?;
+    context.write_launch(launch).map_err(BuildpackError::from)?;
     Ok(())
 }
 
