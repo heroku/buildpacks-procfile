@@ -1,13 +1,11 @@
 # Procfile Cloud Native Buildpack (CNB) in Rust
 
-This buildpack implements https://github.com/heroku/procfile-cnb in the Rust programming language. The goal in the re-write is improved confidence and maintenance through a stronger type system and unit tests. 
+This buildpack implements https://github.com/heroku/procfile-cnb in the Rust programming language. The goal in the re-write is improved confidence and maintenance through a stronger type system and unit tests.
 
 ## TODO
 
-- Setup Circle CI to run tests and linting
 - Logging
 - Integration/Cutlass/pack test
-- Refactor error handling to not panic but return Err
 - Default process type? https://github.com/heroku/procfile-cnb/blob/000d0b8220d6d95931d11836abc05fed696ea62e/releaser.go#L35
 - Separate cache for musl builds versus MacOS (faster dev/test)
 
@@ -76,5 +74,5 @@ fn detect(context: GenericDetectContext) -> Result<DetectOutcome, E> {
 }
 fn build(context: GenericDetectContext) -> Result<(), E> {
   // ...
-} 
+}
 ```

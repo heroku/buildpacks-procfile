@@ -50,21 +50,16 @@ fn parse_procfile(procfile: &Path) -> Result<Vec<Process>, BuildpackError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{env, fs, path::PathBuf, str::FromStr};
+    use std::{fs, str::FromStr};
 
-    use tempfile::{tempdir, TempDir};
+    use libcnb::data::launch::ProcessType;
 
-    use libcnb::{BuildContext, GenericPlatform, Platform};
-
-    use libcnb::data::{
-        buildpack::BuildpackToml, buildpack_plan::BuildpackPlan, buildpack_plan::Entry,
-        launch::ProcessType,
-    };
+    use crate::test_helper::{procfile_fixture_path, TempContext};
 
     #[test]
     fn test_build() {
-        let tmp_context = make_temp_context();
-        let context = tmp_context.context;
+        let temp_context = TempContext::new(include_str!("../buildpack.toml"));
+        let context = temp_context.build;
         let launch_toml_path = context.layers_dir.join("launch.toml");
 
         fs::write(context.app_dir.join("Procfile"), "web: bundle exec rails s").unwrap();
@@ -98,59 +93,5 @@ mod tests {
             "while true; do echo 'lol'; sleep 2; done",
             processes[1].command
         );
-    }
-
-    struct TempContext {
-        // Hold reference to temp dirs so they're not cleaned off disk
-        // https://heroku.slack.com/archives/CFF88C0HM/p1631124162001800
-        _tmp_dirs: Vec<TempDir>,
-        context: GenericBuildContext,
-    }
-
-    fn make_temp_context() -> TempContext {
-        let bp_temp = tempdir().unwrap();
-        let app_temp = tempdir().unwrap();
-        let layers_temp = tempdir().unwrap();
-
-        let bp_dir = bp_temp.path().to_owned();
-        let app_dir = app_temp.path().to_owned();
-        let layers_dir = layers_temp.path().to_owned();
-
-        let context = BuildContext {
-            layers_dir,
-            app_dir,
-            buildpack_dir: PathBuf::new(),
-            stack_id: String::from("lol"),
-            platform: GenericPlatform::from_path(bp_dir).unwrap(),
-            buildpack_plan: BuildpackPlan {
-                entries: Vec::<Entry>::new(),
-            },
-            buildpack_descriptor: toml::from_str::<BuildpackToml<Option<toml::value::Table>>>(
-                r#"
-    api = "0.4"
-
-    [buildpack]
-    id = "foo/bar"
-    name = "Bar Buildpack"
-    version = "0.0.1"
-
-    [[stacks]]
-    id = "io.buildpacks.stacks.bionic"
-
-            "#,
-            )
-            .unwrap(),
-        };
-        TempContext {
-            _tmp_dirs: vec![bp_temp, app_temp, layers_temp],
-            context,
-        }
-    }
-
-    fn procfile_fixture_path(fixture_name: &str) -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("test/fixtures")
-            .join(fixture_name)
-            .join("Procfile")
     }
 }

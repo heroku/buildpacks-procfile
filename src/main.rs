@@ -12,6 +12,9 @@ mod build;
 mod detect;
 mod error;
 
+#[cfg(test)]
+mod test_helper;
+
 // Main entrypoint, the `cnb_runtime` produces a single binary
 // that will call either `detect` or `build` functions based on the name of the
 // binary file.
