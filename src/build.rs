@@ -1,22 +1,24 @@
-use crate::BuildpackError;
+use crate::error::BuildpackError;
 use libcnb::{
     data::launch::{Launch, Process},
     GenericBuildContext,
 };
-use std::path::PathBuf;
+use std::path::Path;
 use yaml_rust::YamlLoader;
 
 /// `bin/build`
+// https://github.com/Malax/libcnb.rs/issues/63
+#[allow(clippy::needless_pass_by_value)]
 pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<BuildpackError>> {
     let mut launch = Launch::new();
-    launch.processes = parse_procfile(context.app_dir.join("Procfile"))?;
+    launch.processes = parse_procfile(&context.app_dir.join("Procfile"))?;
 
     context.write_launch(launch).map_err(BuildpackError::from)?;
     Ok(())
 }
 
 /// Parse processes from `Procfile`
-fn parse_procfile(procfile: PathBuf) -> Result<Vec<Process>, BuildpackError> {
+fn parse_procfile(procfile: &Path) -> Result<Vec<Process>, BuildpackError> {
     let procfile_path = procfile.to_str().unwrap();
     let procfile_contents = std::fs::read_to_string(procfile_path)?;
     let contents = YamlLoader::load_from_str(&procfile_contents)?;
@@ -80,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_parse_procfile() {
-        let processes = parse_procfile(procfile_fixture_path("app_with_procfile")).unwrap();
+        let processes = parse_procfile(&procfile_fixture_path("app_with_procfile")).unwrap();
 
         assert_eq!(
             ProcessType::from_str("web").unwrap().as_str(),

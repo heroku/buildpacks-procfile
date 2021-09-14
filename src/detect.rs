@@ -1,7 +1,11 @@
-use crate::BuildpackError;
+use crate::error::BuildpackError;
 use libcnb::{data::build_plan::BuildPlan, DetectOutcome, GenericDetectContext, Result};
 
 /// `bin/detect`
+// https://github.com/Malax/libcnb.rs/issues/63
+#[allow(clippy::needless_pass_by_value)]
+// https://github.com/Malax/libcnb.rs/issues/86
+#[allow(clippy::unnecessary_wraps)]
 pub fn detect(context: GenericDetectContext) -> Result<DetectOutcome, BuildpackError> {
     let procfile_path = context.app_dir.join("Procfile");
 
