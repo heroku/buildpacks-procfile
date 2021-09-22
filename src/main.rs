@@ -10,6 +10,7 @@ use libcnb::{cnb_runtime, GenericErrorHandler};
 
 mod build;
 mod detect;
+mod display;
 mod error;
 
 #[cfg(test)]

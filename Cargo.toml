@@ -10,6 +10,7 @@ edition = "2018"
 libcnb = "0.2.0"
 thiserror = "1.0"
 yaml-rust = "0.4"
+termcolor = "1.1.2"
 
 [dev-dependencies]
 assert_matches = "1.5.0"
