@@ -1,5 +1,5 @@
 use crate::display;
-use crate::error::BuildpackError;
+use crate::error::ProcfileError;
 use libcnb::{
     data::launch::{Launch, Process},
     GenericBuildContext,
@@ -10,7 +10,7 @@ use yaml_rust::YamlLoader;
 /// `bin/build`
 // https://github.com/Malax/libcnb.rs/issues/63
 #[allow(clippy::needless_pass_by_value)]
-pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<BuildpackError>> {
+pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<ProcfileError>> {
     display::header("Discovering process types");
 
     let mut launch = Launch::new();
@@ -21,7 +21,7 @@ pub fn build(context: GenericBuildContext) -> Result<(), libcnb::Error<Buildpack
         names_from_processes(&launch.processes)
     ));
 
-    context.write_launch(launch).map_err(BuildpackError::from)?;
+    context.write_launch(launch).map_err(ProcfileError::from)?;
     Ok(())
 }
 
@@ -39,7 +39,7 @@ fn names_from_processes(processes: &[Process]) -> String {
 }
 
 /// Parse processes from `Procfile`
-fn parse_procfile(procfile: &Path) -> Result<Vec<Process>, BuildpackError> {
+fn parse_procfile(procfile: &Path) -> Result<Vec<Process>, ProcfileError> {
     let procfile_path = procfile.to_str().unwrap();
     let procfile_contents = std::fs::read_to_string(procfile_path)?;
     let contents = YamlLoader::load_from_str(&procfile_contents)?;
@@ -50,17 +50,17 @@ fn parse_procfile(procfile: &Path) -> Result<Vec<Process>, BuildpackError> {
 
     let processes = contents[0]
         .as_hash()
-        .ok_or(BuildpackError::Procfile("Not a valid YAML Hash"))?;
+        .ok_or(ProcfileError::Procfile("Not a valid YAML Hash"))?;
 
     processes
         .into_iter()
         .map(|(key, value)| {
             let process = Process::new(
-                key.as_str().ok_or(BuildpackError::Procfile(
+                key.as_str().ok_or(ProcfileError::Procfile(
                     "process type name is an empty string",
                 ))?,
                 // TODO: Split this into separate args
-                value.as_str().ok_or(BuildpackError::Procfile(
+                value.as_str().ok_or(ProcfileError::Procfile(
                     "process command is an empty string",
                 ))?,
                 Vec::<String>::new(),
