@@ -54,9 +54,9 @@ checksum = "3cb00336871be5ed2c8ed44b60ae9959dc5b9f08539422ed43f09e34ecaeba21"
 
 [[package]]
 name = "libcnb"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "904c086a4375cb0955138b095623c4751c6e6be9415f17fb5f0cfd4e37b1ca94"
+checksum = "d9adfe0e4625435e4dbaac927cf99ae6059aeaaf49b390346ba6a2110c6010f7"
 dependencies = [
  "lazy_static",
  "regex",
