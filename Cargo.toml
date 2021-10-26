@@ -2,9 +2,8 @@
 name = "procfile-buildpack"
 version = "0.1.0"
 authors = ["Richard Schneeman <richard.schneeman@gmail.com>"]
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2021"
+rust-version = "1.56"
 
 [dependencies]
 libcnb = "0.3.0"
