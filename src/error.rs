@@ -1,3 +1,4 @@
+#![allow(clippy::module_name_repetitions)]
 // This module defines our custom `ProcfileError`
 //
 // All top level errors are represented by ProcfileError.
@@ -80,6 +81,7 @@
 pub enum ProcfileError {
     #[error("IO Error: {0}")]
     Io(#[from] std::io::Error),
+
     #[error("Procfile YAML Parsing Error: {0}")]
     YamlScan(#[from] yaml_rust::scanner::ScanError),
     #[error("Procfile is not in a valid format: {0}")]
@@ -88,6 +90,19 @@ pub enum ProcfileError {
     ProcessType(#[from] libcnb::data::launch::ProcessTypeError),
     #[error("TOML Error: {0}")]
     Toml(#[from] libcnb::TomlFileError),
+
+    #[error("Procfile error: {0}")]
+    ProcfileParsingError(#[from] ProcfileParsingError),
+}
+
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+pub enum ProcfileParsingError {
+    #[error("Cannot parse Procfile")]
+    CannotParse,
+    #[error("Process command cannot be empty")]
+    EmptyProcessCommand,
+    #[error("Process name cannot be empty")]
+    EmptyProcessName,
 }
 
 // Tells libcnb how to convert `ProcfileError` into `libcnb::Error<E>` where E
