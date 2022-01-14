@@ -3,7 +3,7 @@ version: 2.1
 executors:
   rust:
     docker:
-      - image: cimg/rust:1.57
+      - image: cimg/rust:1.58
     working_directory: /mnt/ramdisk/project
 
 commands:
