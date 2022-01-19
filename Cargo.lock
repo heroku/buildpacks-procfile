@@ -347,6 +347,7 @@ version = "0.1.0"
 dependencies = [
  "libcnb",
  "libherokubuildpack",
+ "linked-hash-map",
  "tempfile",
  "thiserror",
  "yaml-rust",
