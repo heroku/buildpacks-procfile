@@ -1,18 +1,19 @@
-use crate::{Procfile, ProcfileError};
+use crate::Procfile;
 use libcnb::data::launch::Launch;
 use libcnb::data::launch::Process;
 use libcnb::data::launch::ProcessType;
 use std::str::FromStr;
 
 impl TryFrom<Procfile> for Launch {
-    type Error = ProcfileError;
+    type Error = ProcfileConversionError;
 
     fn try_from(value: Procfile) -> Result<Self, Self::Error> {
         let mut launch = Launch::new();
 
         for (key, value) in value.processes {
             launch.processes.push(Process {
-                r#type: ProcessType::from_str(&key).map_err(ProcfileError::ProcessType)?,
+                r#type: ProcessType::from_str(&key)
+                    .map_err(ProcfileConversionError::InvalidProcessType)?,
                 command: value,
                 args: Vec::<String>::new(),
                 direct: false,
@@ -28,6 +29,12 @@ impl TryFrom<Procfile> for Launch {
 
         Ok(launch)
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum ProcfileConversionError {
+    #[error("Incompatible process type")]
+    InvalidProcessType(libcnb::data::launch::ProcessTypeError),
 }
 
 #[cfg(test)]

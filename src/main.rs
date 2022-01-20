@@ -3,13 +3,13 @@
 #![warn(unused_crate_dependencies)]
 // https://rust-lang.github.io/rust-clippy/stable/index.html
 #![warn(clippy::pedantic)]
+#![allow(clippy::module_name_repetitions)]
 
 mod error;
 mod launch;
 mod procfile;
 
-use crate::error::ProcfileError;
-use crate::error::ProcfileParsingError;
+use crate::error::{error_handler, ProcfileBuildpackError};
 
 use std::path::Path;
 
@@ -17,7 +17,7 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::{buildpack_main, Buildpack};
+use libcnb::{buildpack_main, Buildpack, Error};
 use libherokubuildpack::{log_header, log_info};
 use std::fs;
 
@@ -28,7 +28,7 @@ struct ProcfileBuildpack;
 impl Buildpack for ProcfileBuildpack {
     type Platform = GenericPlatform;
     type Metadata = GenericMetadata;
-    type Error = ProcfileError;
+    type Error = ProcfileBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
         if dir_has_procfile(context.app_dir) {
@@ -42,11 +42,11 @@ impl Buildpack for ProcfileBuildpack {
         log_header("Discovering process types");
 
         let procfile = fs::read_to_string(context.app_dir.join("Procfile"))
-            .map_err(ProcfileError::Io)
+            .map_err(ProcfileBuildpackError::CannotReadProcfileContents)
             .and_then(|procfile_contents| {
                 procfile_contents
                     .parse()
-                    .map_err(ProcfileError::ProcfileParsingError)
+                    .map_err(ProcfileBuildpackError::ProcfileParsingError)
             })?;
 
         log_info(format!(
@@ -55,8 +55,16 @@ impl Buildpack for ProcfileBuildpack {
         ));
 
         BuildResultBuilder::new()
-            .launch(procfile.try_into()?)
+            .launch(
+                procfile
+                    .try_into()
+                    .map_err(ProcfileBuildpackError::ProcfileConversionError)?,
+            )
             .build()
+    }
+
+    fn on_error(&self, error: Error<Self::Error>) -> i32 {
+        libherokubuildpack::on_error_heroku(error_handler, error)
     }
 }
 

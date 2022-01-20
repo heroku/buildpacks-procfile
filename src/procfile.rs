@@ -1,4 +1,3 @@
-use crate::ProcfileParsingError;
 use linked_hash_map::LinkedHashMap;
 use std::str::FromStr;
 use yaml_rust::YamlLoader;
@@ -35,12 +34,12 @@ impl FromStr for Procfile {
 
     fn from_str(procfile_contents: &str) -> Result<Self, Self::Err> {
         let yaml = YamlLoader::load_from_str(procfile_contents)
-            .map_err(|_| ProcfileParsingError::CannotParse)?;
+            .map_err(|_| ProcfileParsingError::GenericParsingError)?;
 
         if let Some(first_yaml_entry) = yaml.first() {
             let first_yaml_entry_as_hash = first_yaml_entry
                 .as_hash()
-                .ok_or(ProcfileParsingError::CannotParse)?;
+                .ok_or(ProcfileParsingError::GenericParsingError)?;
 
             first_yaml_entry_as_hash
                 .iter()
@@ -55,6 +54,16 @@ impl FromStr for Procfile {
             Ok(Procfile::new())
         }
     }
+}
+
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+pub enum ProcfileParsingError {
+    #[error("Cannot parse Procfile")]
+    GenericParsingError,
+    #[error("Process command cannot be empty")]
+    EmptyProcessCommand,
+    #[error("Process name cannot be empty")]
+    EmptyProcessName,
 }
 
 #[cfg(test)]
@@ -90,7 +99,7 @@ mod tests {
     fn test_cannot_parse_procfile() {
         assert_eq!(
             "web ".parse::<Procfile>(),
-            Err(ProcfileParsingError::CannotParse)
+            Err(ProcfileParsingError::GenericParsingError)
         );
     }
 
