@@ -1,7 +1,5 @@
 use crate::Procfile;
-use libcnb::data::launch::Launch;
-use libcnb::data::launch::Process;
-use libcnb::data::launch::ProcessType;
+use libcnb::data::launch::{Launch, Process, ProcessType};
 use std::str::FromStr;
 
 impl TryFrom<Procfile> for Launch {

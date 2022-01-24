@@ -3,6 +3,7 @@
 #![warn(unused_crate_dependencies)]
 // https://rust-lang.github.io/rust-clippy/stable/index.html
 #![warn(clippy::pedantic)]
+// Re-disable pedantic lints that are too noisy/unwanted.
 #![allow(clippy::module_name_repetitions)]
 
 mod error;
@@ -10,18 +11,14 @@ mod launch;
 mod procfile;
 
 use crate::error::{error_handler, ProcfileBuildpackError};
-
-use std::path::Path;
-
+use crate::procfile::Procfile;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
-
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::{buildpack_main, Buildpack, Error};
+use libcnb::{buildpack_main, Buildpack};
 use libherokubuildpack::{log_header, log_info};
 use std::fs;
-
-use crate::procfile::Procfile;
+use std::path::Path;
 
 struct ProcfileBuildpack;
 
@@ -63,7 +60,7 @@ impl Buildpack for ProcfileBuildpack {
             .build()
     }
 
-    fn on_error(&self, error: Error<Self::Error>) -> i32 {
+    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
         libherokubuildpack::on_error_heroku(error_handler, error)
     }
 }
