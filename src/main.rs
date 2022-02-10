@@ -20,6 +20,12 @@ use libherokubuildpack::{log_header, log_info};
 use std::fs;
 use std::path::Path;
 
+#[cfg(test)]
+use libcnb_test as _;
+
+#[cfg(test)]
+use ureq as _;
+
 struct ProcfileBuildpack;
 
 impl Buildpack for ProcfileBuildpack {

@@ -2,12 +2,6 @@
 
 This buildpack implements https://github.com/heroku/procfile-cnb in the Rust programming language. The goal in the re-write is improved confidence and maintenance through a stronger type system and unit tests.
 
-## TODO
-
-- Integration/Cutlass/pack test
-- Default process type? https://github.com/heroku/procfile-cnb/blob/000d0b8220d6d95931d11836abc05fed696ea62e/releaser.go#L35
-- Separate cache for musl builds versus MacOS (faster dev/test)
-
 ## Dev
 
 ### Pre-reqs

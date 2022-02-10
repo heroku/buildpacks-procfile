@@ -1,10 +1,11 @@
 version: 2.1
+orbs:
+  pack: buildpacks/pack@0.2.4
 
 executors:
   rust:
-    docker:
-      - image: cimg/rust:1.58
-    working_directory: /mnt/ramdisk/project
+    machine:
+      image: ubuntu-2004:202111-02
 
 commands:
   restore-cargo-cache:
@@ -19,6 +20,14 @@ commands:
           key: cargo-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Cargo.lock" }}-{{ checksum ".circleci/config.yml" }}
           paths:
             - ~/.cargo
+  install-rust:
+    steps:
+      - run:
+          name: "Install Rust"
+          command: |
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh
+            chmod +x rustup.sh
+            ./rustup.sh -y
 
 jobs:
   lint:
@@ -26,6 +35,7 @@ jobs:
     steps:
       - checkout
       - restore-cargo-cache
+      - install-rust
       - run:
           name: Clippy
           # Using --all-targets so tests are checked and --deny to fail on warnings.
@@ -40,12 +50,21 @@ jobs:
     steps:
       - checkout
       - restore-cargo-cache
+      - install-rust
+      - pack/install-pack:
+          version: 0.23.0
       - run:
-          name: Build
-          command: cargo build --all-features --locked
+          name: Install musl
+          command: sudo apt-get update && sudo apt-get install musl-tools --no-install-recommends
+      - run:
+          name: Install libcnb build tool
+          command: cargo install libcnb-cargo
+      - run:
+          name: Add musl target
+          command: rustup target add x86_64-unknown-linux-musl
       - run:
           name: Run tests
-          command: cargo test --all-features --locked
+          command: RUST_BACKTRACE=1 cargo test --all-features --locked
       - save-cargo-cache
 
 workflows:
