@@ -1,6 +1,6 @@
 use linked_hash_map::LinkedHashMap;
+use regex::Regex;
 use std::str::FromStr;
-use yaml_rust::YamlLoader;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Procfile {
@@ -33,37 +33,39 @@ impl FromStr for Procfile {
     type Err = ProcfileParsingError;
 
     fn from_str(procfile_contents: &str) -> Result<Self, Self::Err> {
-        let yaml = YamlLoader::load_from_str(procfile_contents)
-            .map_err(|_| ProcfileParsingError::GenericParsingError)?;
+        let re_carriage_return_newline =
+            Regex::new("\\r\\n?").map_err(ProcfileParsingError::RegexError)?;
+        let re_multiple_newline =
+            Regex::new("\\n*\\z").map_err(ProcfileParsingError::RegexError)?;
 
-        if let Some(first_yaml_entry) = yaml.first() {
-            let first_yaml_entry_as_hash = first_yaml_entry
-                .as_hash()
-                .ok_or(ProcfileParsingError::GenericParsingError)?;
+        // https://github.com/heroku/codon/blob/2613554383cb298076b4a722f4a1aa982ad757e6/lib/slug_compiler/slug.rb#L538-L545
+        let re_procfile_entry = Regex::new("^[[:space:]]*([a-zA-Z0-9_-]+):?\\s+(.*)[[:space:]]*")
+            .map_err(ProcfileParsingError::RegexError)?;
 
-            first_yaml_entry_as_hash
-                .iter()
-                .map(|(key, value)| match (key.as_str(), value.as_str()) {
-                    (Some(key), Some(value)) => Ok((String::from(key), String::from(value))),
-                    (None, _) => Err(ProcfileParsingError::EmptyProcessName),
-                    (_, None) => Err(ProcfileParsingError::EmptyProcessCommand),
+        let procfile_contents = re_carriage_return_newline.replace_all(procfile_contents, "\n");
+        let procfile_contents = re_multiple_newline.replace(&procfile_contents, "\n");
+
+        Ok(Procfile {
+            processes: procfile_contents
+                .lines()
+                .into_iter()
+                .filter_map(|line| re_procfile_entry.captures(line))
+                .filter_map(|cap| {
+                    cap.get(1).and_then(|name| {
+                        cap.get(2).map(|command| {
+                            (String::from(name.as_str()), String::from(command.as_str()))
+                        })
+                    })
                 })
-                .collect::<Result<LinkedHashMap<String, String>, ProcfileParsingError>>()
-                .map(|processes| Procfile { processes })
-        } else {
-            Ok(Procfile::new())
-        }
+                .collect::<LinkedHashMap<String, String>>(),
+        })
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+#[derive(thiserror::Error, Debug, PartialEq)]
 pub enum ProcfileParsingError {
-    #[error("Cannot parse Procfile")]
-    GenericParsingError,
-    #[error("Process command cannot be empty")]
-    EmptyProcessCommand,
-    #[error("Process name cannot be empty")]
-    EmptyProcessName,
+    #[error("Regex error: {0}")]
+    RegexError(#[from] regex::Error),
 }
 
 #[cfg(test)]
@@ -96,26 +98,17 @@ mod tests {
     }
 
     #[test]
-    fn test_cannot_parse_procfile() {
-        assert_eq!(
-            "web ".parse::<Procfile>(),
-            Err(ProcfileParsingError::GenericParsingError)
-        );
+    fn test_nonsense_procfile() {
+        assert_eq!("&&&&&".parse::<Procfile>(), Ok(Procfile::new()));
     }
 
     #[test]
     fn test_missing_command_parse_procfile() {
-        assert_eq!(
-            "web: ".parse::<Procfile>(),
-            Err(ProcfileParsingError::EmptyProcessCommand)
-        );
+        assert_eq!("web:".parse::<Procfile>(), Ok(Procfile::new()));
     }
 
     #[test]
     fn test_missing_name_parse_procfile() {
-        assert_eq!(
-            ": rails -s".parse::<Procfile>(),
-            Err(ProcfileParsingError::EmptyProcessName)
-        );
+        assert_eq!(": rails -s".parse::<Procfile>(), Ok(Procfile::new()));
     }
 }

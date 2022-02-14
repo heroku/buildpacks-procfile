@@ -29,7 +29,8 @@ fn test() {
 
 fn call_test_fixture_service(addr: std::net::SocketAddr, payload: &str) -> Result<String, ()> {
     let req = ureq::get(&format!(
-        "http://127.0.0.1:{}/?payload={}",
+        "http://{}:{}/?payload={}",
+        addr.ip(),
         addr.port(),
         payload
     ));
