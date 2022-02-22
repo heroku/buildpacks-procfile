@@ -34,38 +34,3 @@ Processes:
   web (default)        bash         node index.js
   worker               bash         while true; do echo 'lol'; sleep 2; done
 ```
-
-### Structure
-
-The code produces a single binary that contain both the "detect" and "build" interfaces:
-
-```rs
-fn main() {
-    cnb_runtime(detect, build, GenericErrorHandler);
-}
-```
-
-The function `cnb_runtime` changes behavior based on the name of the calling file. In the `Makefile.toml` the binary is symlinked with different names (`detect` versus `build`):
-
-```rs
-fs::hard_link(destination.join("bin/build"), destination.join("bin/detect")).unwrap();
-```
-
-The package can be complied for linux (musl) by running:
-
-```
-cargo make pack --profile "production"
-```
-
-This produces a `target/bin/detect` and `target/bin/build` that can be used for pack.
-
-The functionality of those two binaries are come from the functions with the same name:
-
-```rs
-fn detect(context: GenericDetectContext) -> Result<DetectOutcome, E> {
-  //...
-}
-fn build(context: GenericDetectContext) -> Result<(), E> {
-  // ...
-}
-```
