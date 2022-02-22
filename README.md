@@ -1,6 +1,11 @@
-# Procfile Cloud Native Buildpack (CNB) in Rust
+# Heroku Cloud Native Procfile Buildpack
 
-This buildpack implements https://github.com/heroku/procfile-cnb in the Rust programming language. The goal in the re-write is improved confidence and maintenance through a stronger type system and unit tests.
+[![CircleCI](https://circleci.com/gh/heroku/procfile-cnb/tree/main.svg?style=svg)](https://circleci.com/gh/heroku/procfile-cnb/tree/main)
+
+This is a [Cloud Native Buildpack](https://buildpacks.io/) that replicates the behavior of
+`Procfile` in [Heroku Buildpacks](https://devcenter.heroku.com/articles/buildpacks).
+
+It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](https://github.com/Malax/libcnb.rs).
 
 ## Dev
 
