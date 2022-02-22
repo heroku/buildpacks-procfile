@@ -16,6 +16,18 @@ Run unit tests:
 $ cargo test
 ```
 
+Run integration tests:
+
+```
+$ cargo test -- --ignored
+```
+
+Or to run all of the tests at the same time:
+
+```
+$ cargo test -- --include-ignored
+```
+
 ### Pack build example
 
 ```

@@ -1,6 +1,12 @@
+//! Integration tests using libcnb-test.
+//!
+//! All integration tests are skipped by default (using the `ignore` attribute),
+//! since performing builds is slow. To run the tests use: `cargo test -- --ignored`
+
 use libcnb_test::{BuildpackReference, IntegrationTest};
 
 #[test]
+#[ignore]
 fn test() {
     IntegrationTest::new("heroku/buildpacks:20", "tests/fixtures/app_with_procfile")
         .buildpacks(vec![BuildpackReference::Crate])

@@ -64,7 +64,7 @@ jobs:
           command: rustup target add x86_64-unknown-linux-musl
       - run:
           name: Run tests
-          command: RUST_BACKTRACE=1 cargo test --all-features --locked
+          command: RUST_BACKTRACE=1 cargo test --all-features --locked -- --include-ignored
       - save-cargo-cache
 
 workflows:
