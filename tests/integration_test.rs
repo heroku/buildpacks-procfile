@@ -3,7 +3,11 @@
 //! All integration tests are skipped by default (using the `ignore` attribute),
 //! since performing builds is slow. To run the tests use: `cargo test -- --ignored`
 
+// Enable Clippy lints that are disabled by default.
+#![warn(clippy::pedantic)]
+
 use libcnb_test::{BuildpackReference, IntegrationTest};
+use std::io;
 
 #[test]
 #[ignore]
@@ -28,17 +32,17 @@ fn test() {
                     call_test_fixture_service(container.address_for_port(8080).unwrap(), "Aeluon")
                         .unwrap();
 
-                assert!(result.contains("payload=Aeluon"))
+                assert!(result.contains("payload=Aeluon"));
             });
         });
 }
 
-fn call_test_fixture_service(addr: std::net::SocketAddr, payload: &str) -> Result<String, ()> {
+fn call_test_fixture_service(addr: std::net::SocketAddr, payload: &str) -> io::Result<String> {
     let req = ureq::get(&format!(
         "http://{}:{}/?payload={}",
         addr.ip(),
         addr.port(),
         payload
     ));
-    Ok(req.call().unwrap().into_string().unwrap())
+    req.call().unwrap().into_string()
 }
