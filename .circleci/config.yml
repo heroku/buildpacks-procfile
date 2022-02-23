@@ -45,7 +45,7 @@ jobs:
           command: cargo fmt -- --check --verbose
       - save-cargo-cache
 
-  build-and-test:
+  test:
     executor: rust
     steps:
       - checkout
@@ -56,9 +56,6 @@ jobs:
       - run:
           name: Install musl
           command: sudo apt-get update && sudo apt-get install musl-tools --no-install-recommends
-      - run:
-          name: Install libcnb build tool
-          command: cargo install libcnb-cargo
       - run:
           name: Add musl target
           command: rustup target add x86_64-unknown-linux-musl
@@ -71,4 +68,4 @@ workflows:
   ci:
     jobs:
       - lint
-      - build-and-test
+      - test
