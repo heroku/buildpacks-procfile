@@ -91,10 +91,11 @@ jobs:
             # Attaches the previously generate cloud native buildpack file (`*.cnb`)
             # to the release
             - id: release
-              name: Upload buildpackage to release
+              name: Upload build package to release
               uses: svenstaro/upload-release-action@v2
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
                 file: ${{ steps.package.outputs.package }}
-                tag: ${{ steps.package.outputs.version }}
+                tag: ${{ github.ref }}
+                tag_name: ${{ steps.package.outputs.version }}
                 overwrite: true
