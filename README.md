@@ -9,6 +9,11 @@ It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](htt
 
 ## Deployment
 
+### 0) Prerelease
+
+- Ensure that the version in `buildpack.toml` is correct. The following deployment steps will create a release with the that version number.
+- Ensure there's an entry for the same version in `CHANGELOG.md`.
+
 ### 1) Generate a release
 
 - Visit the actions page https://github.com/heroku/procfile-cnb/actions,
