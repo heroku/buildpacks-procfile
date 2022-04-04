@@ -11,5 +11,14 @@ keywords = ["procfile", "processes"]
 [[stacks]]
 id = "*"
 
+[[stacks]]
+id = "heroku-18"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-20"
+
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
