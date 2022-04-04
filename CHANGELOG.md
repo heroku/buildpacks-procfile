@@ -1,5 +1,8 @@
 ## Unreleased
 
+## 1.0.1
+- Added explicit support for heroku-* stacks.
+
 ## 1.0.0
 
 - Initial release of Rust procfile buildpack, the old Go buildpack is now archived.
