@@ -96,6 +96,5 @@ jobs:
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
                 file: ${{ steps.package.outputs.package }}
-                tag: ${{ github.ref }}
-                tag_name: ${{ steps.package.outputs.version }}
+                tag: ${{ steps.package.outputs.version }}
                 overwrite: true
