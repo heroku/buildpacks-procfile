@@ -71,6 +71,7 @@ jobs:
                 DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
                 echo "::set-output name=bp_id::$BP_ID"
                 echo "::set-output name=version::$VERSION"
+                echo "::set-output name=tag_name::v${VERSION}"
                 echo "::set-output name=address::${PACKAGE}@${DIGEST}"
                 echo "::set-output name=package::${ESCAPED_ID}_${VERSION}.cnb"
               env:
@@ -87,8 +88,8 @@ jobs:
                 address: ${{ steps.package.outputs.address }}
 
             # Create a release and tag on the github repo
-            # For example: https://github.com/heroku/procfile-cnb/releases/tag/0.7.1
-            # Attaches the previously generate cloud native buildpack file (`*.cnb`)
+            # For example: https://github.com/heroku/procfile-cnb/releases/tag/v1.0.1
+            # Attaches the previously generated cloud native buildpack file (`*.cnb`)
             # to the release
             - id: release
               name: Upload build package to release
@@ -96,5 +97,5 @@ jobs:
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
                 file: ${{ steps.package.outputs.package }}
-                tag: ${{ steps.package.outputs.version }}
+                tag: ${{ steps.package.outputs.tag_name }}
                 overwrite: true
