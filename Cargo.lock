@@ -619,6 +619,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "010b09da618d7791fb4ff0b21d0ed7f69d751d448d0f7645ed8c4bce2419c7df"
+dependencies = [
+ "libcnb-data 0.5.0",
+ "libcnb-proc-macros 0.2.0",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "libcnb-data"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -698,12 +711,12 @@ dependencies = [
 
 [[package]]
 name = "libherokubuildpack"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7dcce802e75d86d7937370d4b9af158420600f9ddddb6d06f7221182d12ff00"
+checksum = "a0cb037fca587c5a7e8203631121c1ff0844718c42ba55f678533ae32dcee425"
 dependencies = [
  "flate2",
- "libcnb",
+ "libcnb 0.6.0",
  "pathdiff",
  "sha2",
  "tar",
@@ -873,7 +886,7 @@ name = "procfile-buildpack"
 version = "0.0.0"
 dependencies = [
  "indoc",
- "libcnb",
+ "libcnb 0.5.0",
  "libcnb-test",
  "libherokubuildpack",
  "linked-hash-map",
