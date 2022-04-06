@@ -6,8 +6,11 @@
 // Enable Clippy lints that are disabled by default.
 #![warn(clippy::pedantic)]
 
+use libcnb_test::assert_contains;
 use libcnb_test::{BuildpackReference, IntegrationTest};
 use std::io;
+use std::thread;
+use std::time::Duration;
 
 #[test]
 #[ignore]
@@ -15,25 +18,26 @@ fn test() {
     IntegrationTest::new("heroku/buildpacks:20", "tests/fixtures/app_with_procfile")
         .buildpacks(vec![BuildpackReference::Crate])
         .run_test(|context| {
-            // On failure, print the stdout
-            println!("{}", context.pack_stdout);
+            assert_contains!(context.pack_stdout, "[Discovering process types]");
+            assert_contains!(
+                context.pack_stdout,
+                "Procfile declares types -> web, worker"
+            );
+            assert_contains!(context.pack_stdout, "Setting default process type 'web'");
 
-            assert!(context.pack_stdout.contains("[Discovering process types]"));
-            assert!(context
-                .pack_stdout
-                .contains("Procfile declares types -> web, worker"));
+            context
+                .prepare_container()
+                .expose_port(8080)
+                .start_with_default_process(|container| {
+                    thread::sleep(Duration::from_secs(1));
+                    let result = call_test_fixture_service(
+                        container.address_for_port(8080).unwrap(),
+                        "Aeluon",
+                    )
+                    .unwrap();
 
-            assert!(context
-                .pack_stdout
-                .contains("Setting default process type 'web'"));
-
-            context.start_container(&[8080], |container| {
-                let result =
-                    call_test_fixture_service(container.address_for_port(8080).unwrap(), "Aeluon")
-                        .unwrap();
-
-                assert!(result.contains("payload=Aeluon"));
-            });
+                    assert_contains!(result, "payload=Aeluon");
+                });
         });
 }
 
