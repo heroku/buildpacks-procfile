@@ -1,6 +1,9 @@
 ## Unreleased
 
+- Updated `libcnb` and `libherokubuildpack` from 0.5.0 to 0.7.0 ([#49](https://github.com/heroku/procfile-cnb/pull/49) and [#60](https://github.com/heroku/procfile-cnb/pull/60)).
+
 ## 1.0.1
+
 - Added explicit support for heroku-* stacks.
 
 ## 1.0.0

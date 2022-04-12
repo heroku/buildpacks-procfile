@@ -4,12 +4,12 @@ name = "procfile-buildpack"
 version = "0.0.0"
 publish = false
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.60"
 
 [dependencies]
 indoc = "1.0.4"
-libcnb = "0.6.0"
-libherokubuildpack = "0.6.0"
+libcnb = "0.7.0"
+libherokubuildpack = "0.7.0"
 linked-hash-map = "0.5.4"
 regex = "1.5.5"
 thiserror = "1.0.30"
