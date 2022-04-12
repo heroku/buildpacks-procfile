@@ -15,6 +15,6 @@ regex = "1.5.5"
 thiserror = "1.0.30"
 
 [dev-dependencies]
-libcnb-test = "0.3.0"
+libcnb-test = "0.3.1"
 tempfile = "3.3.0"
 ureq = "2.4.0"
