@@ -32,7 +32,7 @@ jobs:
               with:
                 registry: docker.io
                 username: ${{ secrets.DOCKER_HUB_USER }}
-                password: ${{ secrets.DOCKER_HUB_PASS }}
+                password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
             # Most of the time this will be a no-op, since GitHub releases new images every week
             # which include the latest stable release of Rust, Rustup, Clippy and rustfmt.
