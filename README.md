@@ -21,13 +21,10 @@ It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](htt
 
 When the action is successful a release will be added to https://github.com/heroku/procfile-cnb/releases and docker hub https://hub.docker.com/r/heroku/procfile-cnb/tags.
 
-### 2) Update pack images
+### 2) Update builders
 
-- Clone https://github.com/heroku/pack-images
-- Edit the `uri` in all builder-*.toml files to point at the latest docker hub release for `heroku/procfile` under `buildpacks`.
-- Edit the `version` in all builder-*.toml files to the latest version of `heroku/procfile` for each `order.group`.
-- Commit and make a PR to pack images
-- Fix any CI errors and merge on success
+Follow the steps described in https://github.com/heroku/languages-team/blob/main/languages/cnb/deploy.md#update-builder-images
+to update the CNB builders with the latest version of this buildpack.
 
 ## Development
 
