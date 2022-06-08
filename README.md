@@ -23,8 +23,8 @@ When the action is successful a release will be added to https://github.com/hero
 
 ### 2) Update builders
 
-Follow the steps described in https://github.com/heroku/languages-team/blob/main/languages/cnb/deploy.md#update-builder-images
-to update the CNB builders with the latest version of this buildpack.
+Heroku builders (github.com/heroku/builders) must be updated to the latest
+version of the buildpack. A detailed procedure is available [here](github.com/heroku/languages-team/blob/main/languages/cnb/deploy.md#update-builder-images).
 
 ## Development
 
