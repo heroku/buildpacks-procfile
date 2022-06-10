@@ -56,7 +56,7 @@ $ cargo test -- --include-ignored
 
 ```
 $ cargo libcnb package \
-&& pack build procfile_example_app --builder heroku/buildpacks:20 --buildpack target/buildpack/debug/heroku_procfile --path tests/fixtures/app_with_procfile --verbose \
+&& pack build procfile_example_app --builder heroku/builder:22 --buildpack target/buildpack/debug/heroku_procfile --path tests/fixtures/app_with_procfile --verbose \
 && docker run -it --rm --entrypoint worker procfile_example_app
 ```
 
