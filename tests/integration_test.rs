@@ -15,7 +15,7 @@ use std::time::Duration;
 #[test]
 #[ignore]
 fn test() {
-    IntegrationTest::new("heroku/buildpacks:20", "tests/fixtures/app_with_procfile")
+    IntegrationTest::new("heroku/builder:22", "tests/fixtures/app_with_procfile")
         .buildpacks(vec![BuildpackReference::Crate])
         .run_test(|context| {
             assert_contains!(context.pack_stdout, "[Discovering process types]");
