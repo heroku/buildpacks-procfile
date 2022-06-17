@@ -5,7 +5,7 @@
 This is a [Cloud Native Buildpack](https://buildpacks.io/) that replicates the behavior of
 `Procfile` in [Heroku Buildpacks](https://devcenter.heroku.com/articles/buildpacks).
 
-It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](https://github.com/Malax/libcnb.rs).
+It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](https://github.com/heroku/libcnb.rs).
 
 ## Deployment
 
@@ -30,7 +30,7 @@ version of the buildpack. A detailed procedure is available [here](github.com/he
 
 ### Prerequisites
 
-See [Development Environment Setup](https://github.com/Malax/libcnb.rs#development-environment-setup).
+See [Development Environment Setup](https://github.com/heroku/libcnb.rs#development-environment-setup).
 
 ### Test
 
@@ -56,14 +56,14 @@ $ cargo test -- --include-ignored
 
 ```
 $ cargo libcnb package \
-&& pack build procfile_example_app --builder heroku/builder:22 --buildpack target/buildpack/debug/heroku_procfile --path tests/fixtures/app_with_procfile --verbose \
+&& pack build procfile_example_app --builder heroku/builder:22 --buildpack target/buildpack/debug/heroku_procfile --path tests/fixtures/web_and_worker_procfile --verbose \
 && docker run -it --rm --entrypoint worker procfile_example_app
 ```
 
 ```
 $ pack inspect procfile_example_app | grep -A10 Processes
 Processes:
-  TYPE                 SHELL        COMMAND              ARGS
-  web (default)        bash         node index.js
-  worker               bash         while true; do echo 'lol'; sleep 2; done
+  TYPE                 SHELL        COMMAND                                   ARGS        WORK DIR
+  web (default)        bash         echo 'this is the web process!'                       /workspace
+  worker               bash         echo 'this is the worker process!'                    /workspace
 ```

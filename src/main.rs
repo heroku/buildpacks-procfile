@@ -23,9 +23,6 @@ use std::path::Path;
 #[cfg(test)]
 use libcnb_test as _;
 
-#[cfg(test)]
-use ureq as _;
-
 struct ProcfileBuildpack;
 
 impl Buildpack for ProcfileBuildpack {
@@ -97,21 +94,15 @@ mod tests {
 
     #[test]
     fn test_valid_detect() {
-        let tmp_dir = tempfile::tempdir().unwrap();
-        let procfile = tmp_dir.path().join("Procfile");
-        std::fs::write(
-            procfile,
-            "julie_andrews: supercalifragilisticexpialidocious",
-        )
-        .unwrap();
-
-        assert!(dir_has_procfile(tmp_dir));
+        let app_dir =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/web_and_worker_procfile");
+        assert!(dir_has_procfile(app_dir));
     }
 
     #[test]
     fn test_missing_procfile_detect() {
-        let tmp_dir = tempfile::tempdir().unwrap();
-        assert!(!dir_has_procfile(tmp_dir));
+        let app_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/missing_procfile");
+        assert!(!dir_has_procfile(app_dir));
     }
 
     #[test]
