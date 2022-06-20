@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Remove incorrect error message shown in the case of internal buildpack regex errors ([#77](https://github.com/heroku/procfile-cnb/pull/77)).
 - Updated `libcnb` and `libherokubuildpack` from 0.5.0 to 0.7.0 ([#49](https://github.com/heroku/procfile-cnb/pull/49) and [#60](https://github.com/heroku/procfile-cnb/pull/60)).
 
 ## 1.0.1
