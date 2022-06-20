@@ -65,7 +65,7 @@ jobs:
           command: pack config trusted-builders add heroku/builder:22
       - run:
           name: Run tests
-          command: RUST_BACKTRACE=1 cargo test --all-features --locked -- --include-ignored
+          command: cargo test --all-features --locked -- --include-ignored
       - save-cargo-cache
 
 workflows:
