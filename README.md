@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/heroku/procfile-cnb/tree/main.svg?style=svg)](https://circleci.com/gh/heroku/procfile-cnb/tree/main)
 
 This is a [Cloud Native Buildpack](https://buildpacks.io/) that replicates the behavior of
-`Procfile` in [Heroku Buildpacks](https://devcenter.heroku.com/articles/buildpacks).
+[`Procfile`](https://devcenter.heroku.com/articles/procfile) from non-CNB Heroku Builds.
 
 It is written in Rust using the Cloud Native Buildpack framework [libcnb.rs](https://github.com/heroku/libcnb.rs).
 
