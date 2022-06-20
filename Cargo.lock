@@ -787,7 +787,6 @@ dependencies = [
  "libherokubuildpack",
  "linked-hash-map",
  "regex",
- "thiserror",
 ]
 
 [[package]]

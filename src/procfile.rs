@@ -33,14 +33,14 @@ impl FromStr for Procfile {
     type Err = ProcfileParsingError;
 
     fn from_str(procfile_contents: &str) -> Result<Self, Self::Err> {
-        let re_carriage_return_newline =
-            Regex::new("\\r\\n?").map_err(ProcfileParsingError::RegexError)?;
-        let re_multiple_newline =
-            Regex::new("\\n*\\z").map_err(ProcfileParsingError::RegexError)?;
+        // Using `.expect()` since these can only fail if we've supplied invalid an invalid regex,
+        // which would be caught by both the `invalid_regex` Clippy lint and the buildpack's tests.
+        let re_carriage_return_newline = Regex::new("\\r\\n?").expect("Invalid Procfile regex");
+        let re_multiple_newline = Regex::new("\\n*\\z").expect("Invalid Procfile regex");
 
         // https://github.com/heroku/codon/blob/2613554383cb298076b4a722f4a1aa982ad757e6/lib/slug_compiler/slug.rb#L538-L545
         let re_procfile_entry = Regex::new("^[[:space:]]*([a-zA-Z0-9_-]+):?\\s+(.*)[[:space:]]*")
-            .map_err(ProcfileParsingError::RegexError)?;
+            .expect("Invalid Procfile regex");
 
         let procfile_contents = re_carriage_return_newline.replace_all(procfile_contents, "\n");
         let procfile_contents = re_multiple_newline.replace(&procfile_contents, "\n");
@@ -62,11 +62,10 @@ impl FromStr for Procfile {
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
-pub enum ProcfileParsingError {
-    #[error("Regex error: {0}")]
-    RegexError(#[from] regex::Error),
-}
+// There are currently no ways in which parsing can fail, however we will add some in the future:
+// https://github.com/heroku/procfile-cnb/issues/73
+#[derive(Debug, PartialEq)]
+pub enum ProcfileParsingError {}
 
 #[cfg(test)]
 mod tests {
