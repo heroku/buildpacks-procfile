@@ -6,47 +6,161 @@
 // Enable Clippy lints that are disabled by default.
 #![warn(clippy::pedantic)]
 
+use indoc::indoc;
 use libcnb_test::assert_contains;
-use libcnb_test::{BuildpackReference, IntegrationTest};
-use std::io;
-use std::thread;
-use std::time::Duration;
+use libcnb_test::IntegrationTest;
 
 #[test]
-#[ignore]
-fn test() {
-    IntegrationTest::new("heroku/builder:22", "tests/fixtures/app_with_procfile")
-        .buildpacks(vec![BuildpackReference::Crate])
-        .run_test(|context| {
-            assert_contains!(context.pack_stdout, "[Discovering process types]");
-            assert_contains!(
-                context.pack_stdout,
-                "Procfile declares types -> web, worker"
-            );
-            assert_contains!(context.pack_stdout, "Setting default process type 'web'");
+#[ignore = "integration test"]
+fn test_web_and_worker_procfile() {
+    IntegrationTest::new(
+        "heroku/builder:22",
+        "tests/fixtures/web_and_worker_procfile",
+    )
+    .run_test(|context| {
+        assert_contains!(
+            context.pack_stdout,
+            indoc! {"
+                [Discovering process types]
+                Procfile declares types -> web, worker
+            "}
+        );
 
-            context
-                .prepare_container()
-                .expose_port(8080)
-                .start_with_default_process(|container| {
-                    thread::sleep(Duration::from_secs(1));
-                    let result = call_test_fixture_service(
-                        container.address_for_port(8080).unwrap(),
-                        "Aeluon",
-                    )
-                    .unwrap();
+        // When there is a web process type, it should be made the default even if there
+        // are multiple process types declared.
+        assert_contains!(context.pack_stdout, "Setting default process type 'web'");
+        context
+            .prepare_container()
+            .start_with_default_process(|container| {
+                let log_output = container.logs_wait();
+                assert_eq!(log_output.stdout, "this is the web process!\n");
+            });
 
-                    assert_contains!(result, "payload=Aeluon");
-                });
-        });
+        context
+            .prepare_container()
+            .start_with_process(String::from("worker"), |container| {
+                let log_output = container.logs_wait();
+                assert_eq!(log_output.stdout, "this is the worker process!\n");
+            });
+    });
 }
 
-fn call_test_fixture_service(addr: std::net::SocketAddr, payload: &str) -> io::Result<String> {
-    let req = ureq::get(&format!(
-        "http://{}:{}/?payload={}",
-        addr.ip(),
-        addr.port(),
-        payload
-    ));
-    req.call().unwrap().into_string()
+#[test]
+#[ignore = "integration test"]
+fn test_worker_only_procfile() {
+    IntegrationTest::new("heroku/builder:22", "tests/fixtures/worker_only_procfile").run_test(
+        |context| {
+            assert_contains!(
+                context.pack_stdout,
+                indoc! {"
+                    [Discovering process types]
+                    Procfile declares types -> worker
+                "}
+            );
+
+            // When there is only one process type, it should be made the default process
+            // type even when it doesn't have the name "web".
+            assert_contains!(context.pack_stdout, "Setting default process type 'worker'");
+            context
+                .prepare_container()
+                .start_with_default_process(|container| {
+                    let log_output = container.logs_wait();
+                    assert_eq!(log_output.stdout, "this is the worker process!\n");
+                });
+        },
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_multiple_non_web_procfile() {
+    IntegrationTest::new(
+        "heroku/builder:22",
+        "tests/fixtures/multiple_non_web_procfile",
+    )
+    .run_test(|context| {
+        assert_contains!(
+            context.pack_stdout,
+            indoc! {"
+                [Discovering process types]
+                Procfile declares types -> worker, console
+            "}
+        );
+
+        // When there are multiple process types, and none of them has name "web",
+        // then none of them should be set as the default process type.
+        assert_contains!(context.pack_stdout, "no default process type");
+        context
+            .prepare_container()
+            .start_with_default_process(|container| {
+                let log_output = container.logs_wait();
+                assert_contains!(
+                    log_output.stdout,
+                    "when there is no default process a command is required"
+                );
+            });
+
+        context
+            .prepare_container()
+            .start_with_process(String::from("worker"), |container| {
+                let log_output = container.logs_wait();
+                assert_eq!(log_output.stdout, "this is the worker process!\n");
+            });
+
+        context
+            .prepare_container()
+            .start_with_process(String::from("console"), |container| {
+                let log_output = container.logs_wait();
+                assert_eq!(log_output.stdout, "this is the console process!\n");
+            });
+    });
+}
+
+#[test]
+#[ignore = "integration test"]
+// Tests a Procfile that happens to not be valid YAML, but is still valid according
+// to the supported Procfile syntax.
+fn test_not_yaml_procfile() {
+    IntegrationTest::new("heroku/builder:22", "tests/fixtures/not_yaml_procfile").run_test(
+        |context| {
+            assert_contains!(
+                context.pack_stdout,
+                indoc! {"
+                    [Discovering process types]
+                    Procfile declares types -> web
+                "}
+            );
+            assert_contains!(context.pack_stdout, "Setting default process type 'web'");
+            context
+                .prepare_container()
+                .start_with_default_process(|container| {
+                    let log_output = container.logs_wait();
+                    assert_eq!(log_output.stdout, "foo: bar\n");
+                });
+        },
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_empty_procfile() {
+    IntegrationTest::new("heroku/builder:22", "tests/fixtures/empty_procfile").run_test(
+        |context| {
+            assert_contains!(
+                context.pack_stdout,
+                indoc! {"
+                    [Discovering process types]
+                    Procfile declares types -> (none)
+                "}
+            );
+            assert_contains!(context.pack_stdout, "no default process type");
+        },
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
+#[should_panic(expected = "ERROR: No buildpack groups passed detection.")]
+fn test_missing_procfile() {
+    IntegrationTest::new("heroku/builder:22", "tests/fixtures/missing_procfile").run_test(|_| {});
 }

@@ -1,0 +1,7 @@
+# Whilst `Procfile`s seem like they could be parsed as though they were a YAML file,
+# this is not the case - for example the below is a valid Procfile, but parsing as
+# YAML would fail with something like
+# `Error : incomplete explicit mapping pair`
+# There is also some leading/trailing whitespace thrown in to confirm we handle that too.
+
+   web: echo foo: bar   

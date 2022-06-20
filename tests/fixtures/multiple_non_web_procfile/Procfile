@@ -1,0 +1,2 @@
+worker: echo 'this is the worker process!'
+console: echo 'this is the console process!'

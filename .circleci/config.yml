@@ -59,9 +59,13 @@ jobs:
       - run:
           name: Add musl target
           command: rustup target add x86_64-unknown-linux-musl
+      # This can be removed when https://github.com/heroku/libcnb.rs/issues/407 is fixed.
+      - run:
+          name: Mark heroku/builder:22 as a trusted builder
+          command: pack config trusted-builders add heroku/builder:22
       - run:
           name: Run tests
-          command: RUST_BACKTRACE=1 cargo test --all-features --locked -- --include-ignored
+          command: cargo test --all-features --locked -- --include-ignored
       - save-cargo-cache
 
 workflows:
