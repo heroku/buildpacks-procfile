@@ -46,7 +46,7 @@ impl Buildpack for ProcfileBuildpack {
             .and_then(|procfile_contents| {
                 procfile_contents
                     .parse()
-                    .map_err(ProcfileBuildpackError::ProcfileParsingError)
+                    .map_err(ProcfileBuildpackError::Parsing)
             })?;
 
         log_info(format!(
@@ -58,7 +58,7 @@ impl Buildpack for ProcfileBuildpack {
             .launch(
                 procfile
                     .try_into()
-                    .map_err(ProcfileBuildpackError::ProcfileConversionError)?,
+                    .map_err(ProcfileBuildpackError::Conversion)?,
             )
             .build()
     }

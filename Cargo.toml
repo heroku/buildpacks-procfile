@@ -12,7 +12,6 @@ libcnb = "0.7.0"
 libherokubuildpack = "0.7.0"
 linked-hash-map = "0.5.4"
 regex = "1.5.6"
-thiserror = "1.0.31"
 
 [dev-dependencies]
 libcnb-test = "0.3.1"

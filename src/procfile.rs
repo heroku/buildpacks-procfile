@@ -34,13 +34,13 @@ impl FromStr for Procfile {
 
     fn from_str(procfile_contents: &str) -> Result<Self, Self::Err> {
         let re_carriage_return_newline =
-            Regex::new("\\r\\n?").map_err(ProcfileParsingError::RegexError)?;
+            Regex::new("\\r\\n?").map_err(ProcfileParsingError::InvalidRegex)?;
         let re_multiple_newline =
-            Regex::new("\\n*\\z").map_err(ProcfileParsingError::RegexError)?;
+            Regex::new("\\n*\\z").map_err(ProcfileParsingError::InvalidRegex)?;
 
         // https://github.com/heroku/codon/blob/2613554383cb298076b4a722f4a1aa982ad757e6/lib/slug_compiler/slug.rb#L538-L545
         let re_procfile_entry = Regex::new("^[[:space:]]*([a-zA-Z0-9_-]+):?\\s+(.*)[[:space:]]*")
-            .map_err(ProcfileParsingError::RegexError)?;
+            .map_err(ProcfileParsingError::InvalidRegex)?;
 
         let procfile_contents = re_carriage_return_newline.replace_all(procfile_contents, "\n");
         let procfile_contents = re_multiple_newline.replace(&procfile_contents, "\n");
@@ -62,10 +62,9 @@ impl FromStr for Procfile {
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum ProcfileParsingError {
-    #[error("Regex error: {0}")]
-    RegexError(#[from] regex::Error),
+    InvalidRegex(regex::Error),
 }
 
 #[cfg(test)]
