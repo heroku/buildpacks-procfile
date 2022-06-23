@@ -52,7 +52,7 @@ jobs:
       - restore-cargo-cache
       - install-rust
       - pack/install-pack:
-          version: 0.26.0
+          version: 0.27.0
       - run:
           name: Install musl
           command: sudo apt-get update && sudo apt-get install musl-tools --no-install-recommends
