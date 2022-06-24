@@ -9,7 +9,7 @@ pub enum ProcfileBuildpackError {
     ProcfileConversionError(ProcfileConversionError),
 }
 
-pub fn error_handler(buildpack_error: ProcfileBuildpackError) -> i32 {
+pub fn error_handler(buildpack_error: ProcfileBuildpackError) {
     match buildpack_error {
         ProcfileBuildpackError::CannotReadProcfileContents(io_error) => {
             libherokubuildpack::log_error(
@@ -44,8 +44,6 @@ pub fn error_handler(buildpack_error: ProcfileBuildpackError) -> i32 {
             }
         },
     }
-
-    1
 }
 
 impl From<ProcfileBuildpackError> for libcnb::Error<ProcfileBuildpackError> {
