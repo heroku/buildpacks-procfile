@@ -7,8 +7,7 @@
 #![warn(clippy::pedantic)]
 
 use indoc::indoc;
-use libcnb_test::{assert_contains, TestConfig, TestRunner};
-use libcnb_test::{IntegrationTest, PackResult};
+use libcnb_test::{assert_contains, PackResult, TestConfig, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
