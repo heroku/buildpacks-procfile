@@ -63,8 +63,8 @@ impl Buildpack for ProcfileBuildpack {
             .build()
     }
 
-    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
-        libherokubuildpack::on_error_heroku(error_handler, error)
+    fn on_error(&self, error: libcnb::Error<Self::Error>) {
+        libherokubuildpack::on_error_heroku(error_handler, error);
     }
 }
 
