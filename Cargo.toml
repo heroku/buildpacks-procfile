@@ -10,7 +10,7 @@ rust-version = "1.61"
 indoc = "1.0.6"
 libcnb = "0.8.0"
 libherokubuildpack = "0.8.0"
-linked-hash-map = "0.5.4"
+linked-hash-map = "0.5.6"
 regex = "1.5.6"
 
 [dev-dependencies]
