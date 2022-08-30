@@ -23,7 +23,7 @@ jobs:
             # Get the `pack` command for packaging the buildpack
             - id: setup-pack
               name: Install Pack
-              uses: buildpacks/github-actions/setup-pack@v4.8.0
+              uses: buildpacks/github-actions/setup-pack@v4.8.1
 
             # Used by `pack buildpack package --publish`. The buildpack
             # will be published to this user and password

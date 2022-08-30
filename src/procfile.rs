@@ -64,7 +64,7 @@ impl FromStr for Procfile {
 
 // There are currently no ways in which parsing can fail, however we will add some in the future:
 // https://github.com/heroku/procfile-cnb/issues/73
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum ProcfileParsingError {}
 
 #[cfg(test)]
