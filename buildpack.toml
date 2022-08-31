@@ -1,4 +1,4 @@
-api = "0.6"
+api = "0.8"
 
 [buildpack]
 id = "heroku/procfile"
@@ -12,7 +12,7 @@ keywords = ["procfile", "processes"]
 id = "*"
 
 # Explicit stack identifiers are required for `pack` versions `0.24.0`
-# and older. `heroku-*` stack identifiers may be removed once the buildpack 
+# and older. `heroku-*` stack identifiers may be removed once the buildpack
 # api is upgraded to something greater than "0.6".
 [[stacks]]
 id = "heroku-18"

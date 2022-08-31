@@ -1,12 +1,16 @@
 use crate::Procfile;
-use libcnb::data::launch::{Launch, Process, ProcessType};
+use libcnb::data::launch::{Launch, Process, ProcessType, WorkingDirectory};
 use std::str::FromStr;
 
 impl TryFrom<Procfile> for Launch {
     type Error = ProcfileConversionError;
 
     fn try_from(value: Procfile) -> Result<Self, Self::Error> {
-        let mut launch = Launch::new();
+        let mut launch = Launch {
+            labels: vec![],
+            processes: vec![],
+            slices: vec![],
+        };
 
         for (key, value) in value.processes {
             launch.processes.push(Process {
@@ -16,6 +20,7 @@ impl TryFrom<Procfile> for Launch {
                 args: Vec::<String>::new(),
                 direct: false,
                 default: key == "web",
+                working_directory: WorkingDirectory::App,
             });
         }
 
@@ -37,7 +42,7 @@ pub enum ProcfileConversionError {
 #[cfg(test)]
 mod test {
     use crate::Procfile;
-    use libcnb::data::launch::{Launch, Process};
+    use libcnb::data::launch::{Launch, Process, WorkingDirectory};
     use libcnb::data::process_type;
 
     #[test]
@@ -54,7 +59,8 @@ mod test {
                 command: String::from("web_command"),
                 args: vec![],
                 direct: false,
-                default: true
+                default: true,
+                working_directory: WorkingDirectory::App,
             }]
         );
     }
@@ -73,7 +79,8 @@ mod test {
                 command: String::from("xxx_command"),
                 args: vec![],
                 direct: false,
-                default: true
+                default: true,
+                working_directory: WorkingDirectory::App,
             }]
         );
     }
@@ -94,14 +101,16 @@ mod test {
                     command: String::from("web_command"),
                     args: vec![],
                     direct: false,
-                    default: true
+                    default: true,
+                    working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("foo"),
                     command: String::from("foo_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 }
             ]
         );
@@ -123,14 +132,16 @@ mod test {
                     command: String::from("foo_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bar"),
                     command: String::from("bar_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 }
             ]
         );
@@ -161,21 +172,24 @@ mod test {
                     command: String::from("aaa_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("ccc"),
                     command: String::from("ccc_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bbb"),
                     command: String::from("bbb_command"),
                     args: vec![],
                     direct: false,
-                    default: false
+                    default: false,
+                    working_directory: WorkingDirectory::App,
                 },
             ]
         );
