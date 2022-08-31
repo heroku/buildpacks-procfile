@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Upgrade `libcnb` and `libherokubuildpack` to `0.10.0`. ([#98](https://github.com/heroku/procfile-cnb/pull/98))
+- Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#98](https://github.com/heroku/procfile-cnb/pull/98))
+
 ## 1.0.2
 
 - Strip buildpack binary for reduced builder image size (thanks to [`libcnb-cargo` v0.5.0](https://github.com/heroku/libcnb.rs/releases/tag/libcnb-cargo%2Fv0.5.0)).
