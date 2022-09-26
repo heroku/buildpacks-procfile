@@ -16,7 +16,7 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack};
-use libherokubuildpack::{log_header, log_info};
+use libherokubuildpack::log::{log_header, log_info};
 use std::fs;
 use std::path::Path;
 
@@ -64,7 +64,7 @@ impl Buildpack for ProcfileBuildpack {
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
-        libherokubuildpack::on_error_heroku(error_handler, error);
+        libherokubuildpack::error::on_error(error_handler, error);
     }
 }
 
