@@ -1,0 +1,30 @@
+name: heroku/procfile-cnb/ci
+on:
+  push:
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: "./.github/actions/restore-cargo-cache"
+    - uses: "./.github/actions/install-rust"
+    - name: Clippy
+      run: cargo clippy --all-targets --locked -- --deny warnings
+    - name: rustfmt
+      run: cargo fmt -- --check --verbose
+    - uses: "./.github/actions/save-cargo-cache"
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: "./.github/actions/restore-cargo-cache"
+    - uses: "./.github/actions/install-rust"
+#     # This item has no matching transformer
+#     - buildpacks_pack_install_pack:
+    - name: Install musl
+      run: sudo apt-get update && sudo apt-get install musl-tools --no-install-recommends
+    - name: Add musl target
+      run: rustup target add x86_64-unknown-linux-musl
+    - name: Run tests
+      run: cargo test --locked -- --include-ignored
+    - uses: "./.github/actions/save-cargo-cache"
