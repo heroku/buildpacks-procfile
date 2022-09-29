@@ -1,0 +1,9 @@
+name: save-cargo-cache
+runs:
+  using: composite
+  steps:
+  - name: save_cache
+    uses: actions/cache@v2
+    with:
+      path: "~/.cargo"
+      key: cargo-{{ .Environment.${{ github.job }} }}-{{ checksum "Cargo.lock" }}-{{ checksum ".circleci/config.yml" }}
