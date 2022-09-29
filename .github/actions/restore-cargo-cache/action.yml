@@ -1,0 +1,9 @@
+name: restore-cargo-cache
+runs:
+  using: composite
+  steps:
+  - name: restore_cache
+    uses: actions/cache@v2
+    with:
+      key: cargo-{{ .Environment.${{ github.job }} }}-{{ checksum "Cargo.lock" }}-{{ checksum ".circleci/config.yml" }}
+      restore-keys: cargo-{{ .Environment.${{ github.job }} }}-{{ checksum "Cargo.lock" }}-{{ checksum ".circleci/config.yml" }}
