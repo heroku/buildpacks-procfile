@@ -9,7 +9,7 @@ jobs:
     release:
         name: Package, Publish, and Register
         runs-on:
-            - ubuntu-latest
+            - ubuntu-22.04
         steps:
             # Needed to get the buildpack code
             - name: Checkout
@@ -93,7 +93,7 @@ jobs:
             # to the release
             - id: release
               name: Upload build package to release
-              uses: svenstaro/upload-release-action@v2
+              uses: svenstaro/upload-release-action@v2.3.0
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
                 file: ${{ steps.package.outputs.package }}
