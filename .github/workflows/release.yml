@@ -10,6 +10,8 @@ jobs:
         name: Package, Publish, and Register
         runs-on:
             - ubuntu-22.04
+        permissions:
+          contents: write
         steps:
             # Needed to get the buildpack code
             - name: Checkout
