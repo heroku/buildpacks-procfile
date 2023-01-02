@@ -492,9 +492,9 @@ dependencies = [
 
 [[package]]
 name = "libherokubuildpack"
-version = "0.11.1"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8bffa56c2d7cf1c9265126f368343d6d5bf34c33da7ddf0d5ac245da9e999265"
+checksum = "808d58945c03f51376de7e359e979f6f259473ee27c03188dcedd7ef41224ba5"
 dependencies = [
  "libcnb",
  "termcolor",
