@@ -27,6 +27,9 @@ jobs:
               name: Install Pack
               uses: buildpacks/github-actions/setup-pack@v5.0.0
 
+            - name: Install yj
+              uses: buildpacks/github-actions/setup-tools@v5.0.0
+
             # Used by `pack buildpack package --publish`. The buildpack
             # will be published to this user and password
             - name: Login to Docker Hub
