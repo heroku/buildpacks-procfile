@@ -48,7 +48,6 @@ impl FromStr for Procfile {
         Ok(Procfile {
             processes: procfile_contents
                 .lines()
-                .into_iter()
                 .filter_map(|line| re_procfile_entry.captures(line))
                 .filter_map(|cap| {
                     cap.get(1).and_then(|name| {
