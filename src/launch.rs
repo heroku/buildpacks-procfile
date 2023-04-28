@@ -5,14 +5,14 @@ use std::str::FromStr;
 impl TryFrom<Procfile> for Launch {
     type Error = ProcfileConversionError;
 
-    fn try_from(value: Procfile) -> Result<Self, Self::Error> {
+    fn try_from(procfile: Procfile) -> Result<Self, Self::Error> {
         let mut launch = Launch {
             labels: vec![],
             processes: vec![],
             slices: vec![],
         };
 
-        for (key, value) in value.processes {
+        for (key, value) in procfile.processes {
             launch.processes.push(Process {
                 r#type: ProcessType::from_str(&key)
                     .map_err(ProcfileConversionError::InvalidProcessType)?,
