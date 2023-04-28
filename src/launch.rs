@@ -17,7 +17,7 @@ impl TryFrom<Procfile> for Launch {
                 r#type: ProcessType::from_str(&key)
                     .map_err(ProcfileConversionError::InvalidProcessType)?,
                 command: vec![String::from("bash")],
-                args: vec![String::from("-c"), format!("exec {value}")],
+                args: vec![String::from("-c"), value],
                 default: key == "web",
                 working_directory: WorkingDirectory::App,
             });
@@ -56,7 +56,7 @@ mod test {
             vec![Process {
                 r#type: process_type!("web"),
                 command: vec![String::from("bash")],
-                args: vec![String::from("-c"), format!("exec web_command")],
+                args: vec![String::from("-c"), String::from("web_command")],
                 default: true,
                 working_directory: WorkingDirectory::App,
             }]
@@ -75,7 +75,7 @@ mod test {
             vec![Process {
                 r#type: process_type!("xxx"),
                 command: vec![String::from("bash")],
-                args: vec![String::from("-c"), format!("exec xxx_command")],
+                args: vec![String::from("-c"), String::from("xxx_command")],
                 default: true,
                 working_directory: WorkingDirectory::App,
             }]
@@ -96,14 +96,14 @@ mod test {
                 Process {
                     r#type: process_type!("web"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec web_command")],
+                    args: vec![String::from("-c"), String::from("web_command")],
                     default: true,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("foo"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec foo_command")],
+                    args: vec![String::from("-c"), String::from("foo_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 }
@@ -125,14 +125,14 @@ mod test {
                 Process {
                     r#type: process_type!("foo"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec foo_command")],
+                    args: vec![String::from("-c"), String::from("foo_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bar"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec bar_command")],
+                    args: vec![String::from("-c"), String::from("bar_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 }
@@ -163,21 +163,21 @@ mod test {
                 Process {
                     r#type: process_type!("aaa"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec aaa_command")],
+                    args: vec![String::from("-c"), String::from("aaa_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("ccc"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec ccc_command")],
+                    args: vec![String::from("-c"), String::from("ccc_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bbb"),
                     command: vec![String::from("bash")],
-                    args: vec![String::from("-c"), format!("exec bbb_command")],
+                    args: vec![String::from("-c"), String::from("bbb_command")],
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
