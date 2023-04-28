@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Upgrade `libcnb` and `libherokubuildpack` to `0.12.0`. ([#150](https://github.com/heroku/procfile-cnb/pull/150))
+- The buildpack now implements Buildpack API 0.9 instead of 0.8, and so requires `lifecycle` 0.15.x or newer. ([#150](https://github.com/heroku/procfile-cnb/pull/150))
+
 ## 2.0.0
 
 - Remove redundant explicitly named stacks from `[[stacks]]`. ([#103](https://github.com/heroku/procfile-cnb/pull/103))
