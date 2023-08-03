@@ -1,106 +1,16 @@
-name: release
+name: Release Buildpack
 
-# Allow the action to be triggered manually in the "actions"
-# tab of GitHub.
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
-    release:
-        name: Package, Publish, and Register
-        runs-on:
-            - ubuntu-22.04
-        permissions:
-          contents: write
-        steps:
-            # Needed to get the buildpack code
-            - name: Checkout
-              uses: actions/checkout@v3
-
-            # Install musl gcc needed to compile rust buildpack
-            # to linux musl target
-            - name: Install musl-tools
-              run: sudo apt-get install musl-tools --no-install-recommends
-
-            # Get the `pack` command for packaging the buildpack
-            - id: setup-pack
-              name: Install Pack
-              uses: buildpacks/github-actions/setup-pack@v5.3.0
-
-            - name: Install yj
-              uses: buildpacks/github-actions/setup-tools@v5.3.0
-
-            # Used by `pack buildpack package --publish`. The buildpack
-            # will be published to this user and password
-            - name: Login to Docker Hub
-              uses: docker/login-action@v2
-              with:
-                registry: docker.io
-                username: ${{ secrets.DOCKER_HUB_USER }}
-                password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-            # Most of the time this will be a no-op, since GitHub releases new images every week
-            # which include the latest stable release of Rust, Rustup, Clippy and rustfmt.
-            - name: Update Rust toolchain
-              run: rustup update
-            - name: Rust Cache
-              uses: Swatinem/rust-cache@v2.5.1
-
-            # Needed to get `cargo libcnb package` command
-            - name: Install libcnb plugin
-              run: cargo install libcnb-cargo
-            # Configure Rust so it knows how to compile to the linux musl target
-            - name: Install Rust linux-musl target
-              run: rustup target add x86_64-unknown-linux-musl
-            # Compile the rust buildpack
-            - id: package-libcnb-rs
-              run: cargo libcnb package --release
-
-            # Pull out data from the buildpacks `buildpack.toml` to make
-            # it available to other commands. Also package and publish
-            # the buildpack to docker hub as well as generate a local
-            # file containing the buildpack.
-            - id: package
-              run: |
-                #!/usr/bin/env bash
-                set -euo pipefail
-                BP_ID="$(cat buildpack.toml | yj -t | jq -r .buildpack.id)"
-                VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
-                ESCAPED_ID="$(echo "$BP_ID" | sed 's/\//_/g')"
-                PACKAGE="${REPO}"
-
-                # --publish pushes to the registry (logged in)
-                pack buildpack package --publish --path "target/buildpack/release/$ESCAPED_ID" "${PACKAGE}:${VERSION}"
-                pack buildpack package --format file  --path "target/buildpack/release/$ESCAPED_ID" "${ESCAPED_ID}_${VERSION}.cnb"
-
-                DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
-                echo "::set-output name=bp_id::$BP_ID"
-                echo "::set-output name=version::$VERSION"
-                echo "::set-output name=tag_name::v${VERSION}"
-                echo "::set-output name=address::${PACKAGE}@${DIGEST}"
-                echo "::set-output name=package::${ESCAPED_ID}_${VERSION}.cnb"
-              env:
-                REPO: docker.io/heroku/procfile-cnb
-
-            # Open a PR to the buildpack registry index.
-            # For example: https://github.com/buildpacks/registry-index/issues/2776
-            - id: register
-              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.2.0
-              with:
-                token:   ${{ secrets.CNB_REGISTRY_RELEASE_BOT_GITHUB_TOKEN }}
-                id:      ${{ steps.package.outputs.bp_id }}
-                version: ${{ steps.package.outputs.version }}
-                address: ${{ steps.package.outputs.address }}
-
-            # Create a release and tag on the github repo
-            # For example: https://github.com/heroku/procfile-cnb/releases/tag/v1.0.1
-            # Attaches the previously generated cloud native buildpack file (`*.cnb`)
-            # to the release
-            - id: release
-              name: Upload build package to release
-              uses: svenstaro/upload-release-action@2.7.0
-              with:
-                repo_token: ${{ secrets.GITHUB_TOKEN }}
-                file: ${{ steps.package.outputs.package }}
-                tag: ${{ steps.package.outputs.tag_name }}
-                overwrite: true
+  release:
+    name: Release
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release.yml@main
+    with:
+      app_id: ${{ vars.LINGUIST_GH_APP_ID }}
+    secrets:
+      app_private_key: ${{ secrets.LINGUIST_GH_PRIVATE_KEY }}
+      cnb_registry_token: ${{ secrets.CNB_REGISTRY_RELEASE_BOT_GITHUB_TOKEN }}
+      docker_hub_user: ${{ secrets.DOCKER_HUB_USER }}
+      docker_hub_token: ${{ secrets.DOCKER_HUB_TOKEN }}

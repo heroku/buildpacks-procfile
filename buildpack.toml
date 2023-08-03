@@ -13,3 +13,6 @@ id = "*"
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
+
+[metadata.release]
+image = { repository = "docker.io/heroku/procfile-cnb" }
