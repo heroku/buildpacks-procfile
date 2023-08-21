@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Switched to new buildpack release automation. As a side-effect, the filename of the packaged buildpack attached to the GitHub release has changed from `heroku_procfile_X.Y.Z.cnb` to `heroku_procfile.cnb`. ([#156](https://github.com/heroku/procfile-cnb/pull/156) and [#170](https://github.com/heroku/procfile-cnb/pull/170))
 - Updated buildpack dependencies.
 
 ## [2.0.0] - 2022-09-27
