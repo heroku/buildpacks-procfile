@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated buildpack display name, description and keywords. ([#189](https://github.com/heroku/procfile-cnb/pull/189))
+
 ## [2.0.1] - 2023-08-21
 
 ### Changed
