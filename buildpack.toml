@@ -3,16 +3,16 @@ api = "0.8"
 [buildpack]
 id = "heroku/procfile"
 version = "2.0.1"
-name = "Procfile"
+name = "Heroku Procfile"
 homepage = "https://github.com/heroku/procfile-cnb"
-description = "Official Heroku buildpack for using Procfile."
-keywords = ["procfile", "processes"]
-
-[[stacks]]
-id = "*"
+description = "Heroku's Procfile buildpack."
+keywords = ["procfile", "processes", "heroku"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
+
+[[stacks]]
+id = "*"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/procfile-cnb" }
