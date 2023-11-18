@@ -64,6 +64,9 @@ impl FromStr for Procfile {
 // There are currently no ways in which parsing can fail, however we will add some in the future:
 // https://github.com/heroku/procfile-cnb/issues/73
 #[derive(Debug, Eq, PartialEq)]
+// This allow can be removed once the visibility of this enum is fixed,
+// since the lint only applies to public APIs.
+#[allow(clippy::module_name_repetitions)]
 pub enum ProcfileParsingError {}
 
 #[cfg(test)]
