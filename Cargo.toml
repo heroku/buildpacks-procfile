@@ -7,10 +7,14 @@ edition = "2021"
 rust-version = "1.74"
 
 [lints.rust]
+unreachable_pub = "warn"
+unsafe_code = "warn"
 unused_crate_dependencies = "warn"
 
 [lints.clippy]
+panic_in_result_fn = "warn"
 pedantic = "warn"
+unwrap_used = "warn"
 
 [dependencies]
 indoc = "2"

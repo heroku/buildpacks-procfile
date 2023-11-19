@@ -3,22 +3,23 @@ use regex::Regex;
 use std::str::FromStr;
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Procfile {
-    pub processes: LinkedHashMap<String, String>,
+pub(crate) struct Procfile {
+    pub(crate) processes: LinkedHashMap<String, String>,
 }
 
 impl Procfile {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Procfile {
             processes: LinkedHashMap::new(),
         }
     }
 
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.processes.is_empty()
     }
 
-    pub fn insert(&mut self, k: impl Into<String>, v: impl Into<String>) {
+    #[cfg(test)]
+    pub(crate) fn insert(&mut self, k: impl Into<String>, v: impl Into<String>) {
         self.processes.insert(k.into(), v.into());
     }
 }
@@ -64,10 +65,7 @@ impl FromStr for Procfile {
 // There are currently no ways in which parsing can fail, however we will add some in the future:
 // https://github.com/heroku/procfile-cnb/issues/73
 #[derive(Debug, Eq, PartialEq)]
-// This allow can be removed once the visibility of this enum is fixed,
-// since the lint only applies to public APIs.
-#[allow(clippy::module_name_repetitions)]
-pub enum ProcfileParsingError {}
+pub(crate) enum ProcfileParsingError {}
 
 #[cfg(test)]
 mod tests {

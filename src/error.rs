@@ -4,19 +4,13 @@ use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
 
 #[derive(Debug)]
-// This allow can be removed once the visibility of this enum is fixed,
-// since the lint only applies to public APIs.
-#[allow(clippy::module_name_repetitions)]
-pub enum ProcfileBuildpackError {
+pub(crate) enum ProcfileBuildpackError {
     CannotReadProcfileContents(std::io::Error),
     ProcfileParsingError(ProcfileParsingError),
     ProcfileConversionError(ProcfileConversionError),
 }
 
-// This allow can be removed once the visibility of this enum is fixed,
-// since the lint only applies to public APIs.
-#[allow(clippy::module_name_repetitions)]
-pub fn error_handler(buildpack_error: ProcfileBuildpackError) {
+pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
     match buildpack_error {
         ProcfileBuildpackError::CannotReadProcfileContents(io_error) => {
             log_error(
