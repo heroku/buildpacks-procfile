@@ -35,7 +35,7 @@ impl TryFrom<Procfile> for Launch {
 }
 
 #[derive(Debug)]
-pub enum ProcfileConversionError {
+pub(crate) enum ProcfileConversionError {
     InvalidProcessType(libcnb::data::launch::ProcessTypeError),
 }
 
