@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/procfile"
-version = "3.0.1"
+version = "0.0.0-multi"
 name = "Heroku Procfile"
 homepage = "https://github.com/heroku/buildpacks-procfile"
 description = "Heroku's Procfile buildpack."
@@ -21,6 +21,10 @@ id = "*"
 [[targets]]
 os = "linux"
 arch = "amd64"
+
+[[targets]]
+os = "linux"
+arch = "arm64"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-procfile" }
