@@ -11,9 +11,6 @@ keywords = ["procfile", "processes", "heroku"]
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
-[[stacks]]
-id = "*"
-
 [[targets]]
 os = "linux"
 arch = "amd64"
