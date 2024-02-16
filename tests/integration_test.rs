@@ -32,7 +32,7 @@ fn test_web_and_worker_procfile() {
                 assert_eq!(log_output.stdout, "this is the web process!\n");
             });
 
-            context.start_container(ContainerConfig::new().entrypoint(["worker"]), |container| {
+            context.start_container(ContainerConfig::new().entrypoint("worker"), |container| {
                 let log_output = container.logs_wait();
                 assert_eq!(log_output.stdout, "this is the worker process!\n");
             });
@@ -93,18 +93,15 @@ fn test_multiple_non_web_procfile() {
                 );
             });
 
-            context.start_container(ContainerConfig::new().entrypoint(["worker"]), |container| {
+            context.start_container(ContainerConfig::new().entrypoint("worker"), |container| {
                 let log_output = container.logs_wait();
                 assert_eq!(log_output.stdout, "this is the worker process!\n");
             });
 
-            context.start_container(
-                ContainerConfig::new().entrypoint(["console"]),
-                |container| {
-                    let log_output = container.logs_wait();
-                    assert_eq!(log_output.stdout, "this is the console process!\n");
-                },
-            );
+            context.start_container(ContainerConfig::new().entrypoint("console"), |container| {
+                let log_output = container.logs_wait();
+                assert_eq!(log_output.stdout, "this is the console process!\n");
+            });
         },
     );
 }

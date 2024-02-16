@@ -1,4 +1,4 @@
-api = "0.8"
+api = "0.10"
 
 [buildpack]
 id = "heroku/procfile"
@@ -13,6 +13,10 @@ type = "BSD-3-Clause"
 
 [[stacks]]
 id = "*"
+
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/procfile-cnb" }

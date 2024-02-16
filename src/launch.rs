@@ -16,9 +16,8 @@ impl TryFrom<Procfile> for Launch {
             launch.processes.push(Process {
                 r#type: ProcessType::from_str(&key)
                     .map_err(ProcfileConversionError::InvalidProcessType)?,
-                command: value,
+                command: vec!["bash".to_string(), "-c".to_string(), value],
                 args: Vec::<String>::new(),
-                direct: false,
                 default: key == "web",
                 working_directory: WorkingDirectory::App,
             });
@@ -56,9 +55,12 @@ mod test {
             launch.processes,
             vec![Process {
                 r#type: process_type!("web"),
-                command: String::from("web_command"),
+                command: vec![
+                    String::from("bash"),
+                    String::from("-c"),
+                    String::from("web_command")
+                ],
                 args: vec![],
-                direct: false,
                 default: true,
                 working_directory: WorkingDirectory::App,
             }]
@@ -76,9 +78,12 @@ mod test {
             launch.processes,
             vec![Process {
                 r#type: process_type!("xxx"),
-                command: String::from("xxx_command"),
+                command: vec![
+                    String::from("bash"),
+                    String::from("-c"),
+                    String::from("xxx_command")
+                ],
                 args: vec![],
-                direct: false,
                 default: true,
                 working_directory: WorkingDirectory::App,
             }]
@@ -98,17 +103,23 @@ mod test {
             vec![
                 Process {
                     r#type: process_type!("web"),
-                    command: String::from("web_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("web_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: true,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("foo"),
-                    command: String::from("foo_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("foo_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 }
@@ -129,17 +140,23 @@ mod test {
             vec![
                 Process {
                     r#type: process_type!("foo"),
-                    command: String::from("foo_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("foo_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bar"),
-                    command: String::from("bar_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("bar_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 }
@@ -169,25 +186,34 @@ mod test {
             vec![
                 Process {
                     r#type: process_type!("aaa"),
-                    command: String::from("aaa_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("aaa_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("ccc"),
-                    command: String::from("ccc_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("ccc_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
                 Process {
                     r#type: process_type!("bbb"),
-                    command: String::from("bbb_command"),
+                    command: vec![
+                        String::from("bash"),
+                        String::from("-c"),
+                        String::from("bbb_command")
+                    ],
                     args: vec![],
-                    direct: false,
                     default: false,
                     working_directory: WorkingDirectory::App,
                 },
