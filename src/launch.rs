@@ -16,7 +16,7 @@ impl TryFrom<Procfile> for Launch {
             launch.processes.push(Process {
                 r#type: ProcessType::from_str(&key)
                     .map_err(ProcfileConversionError::InvalidProcessType)?,
-                command: vec!["bash".to_string(), "-c".to_string(), value],
+                command: vec![String::from("bash"), String::from("-c"), value],
                 args: Vec::<String>::new(),
                 default: key == "web",
                 working_directory: WorkingDirectory::App,
