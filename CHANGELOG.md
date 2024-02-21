@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update to Buildpack API 0.10. As a side-effect, all launch processes are now wrapped in `bash -c` instead of using CNB's `direct = false` directive, which is no longer available. ([#205](https://github.com/heroku/procfile-cnb/pull/205))
+- Update to Buildpack API 0.10. ([#205](https://github.com/heroku/procfile-cnb/pull/205)
+    - All launch processes are now wrapped in `bash -c` instead of using CNB's `direct = false` directive, which is no longer available.
+    - `.profile` and `.profile.d` scripts will no longer be automatically sourced.
+    - CNB Lifecycle 0.17 or newer is now required.
 
 ## [2.0.2] - 2023-10-24
 
