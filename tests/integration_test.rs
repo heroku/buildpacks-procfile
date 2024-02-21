@@ -5,7 +5,9 @@
 #![allow(unused_crate_dependencies)]
 
 use indoc::indoc;
-use libcnb_test::{assert_contains, BuildConfig, ContainerConfig, PackResult, TestRunner};
+use libcnb_test::{
+    assert_contains, assert_empty, BuildConfig, ContainerConfig, PackResult, TestRunner,
+};
 
 #[test]
 #[ignore = "integration test"]
@@ -158,6 +160,42 @@ fn test_missing_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 "ERROR: No buildpack groups passed detection."
+            );
+        },
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_process_overrides() {
+    TestRunner::default().build(
+        BuildConfig::new(
+            "heroku/builder:22",
+            "tests/fixtures/web_and_worker_procfile",
+        ),
+        |context| {
+            // Test that the default process command can be overridden.
+            // i.e.: `docker run myapp "echo foo"`
+            context.start_container(
+                ContainerConfig::new().command(["echo 'default process overridden!'"]),
+                |container| {
+                    let all_log_output = container.logs_wait();
+                    assert_empty!(all_log_output.stderr);
+                    assert_eq!(all_log_output.stdout, "default process overridden!\n");
+                },
+            );
+
+            // Test that a named process can be overridden.
+            // i.e.: `docker run --entrypoint worker myapp "echo foo"`
+            context.start_container(
+                ContainerConfig::new()
+                    .entrypoint("worker")
+                    .command(["echo 'worker process overridden!'"]),
+                |container| {
+                    let all_log_output = container.logs_wait();
+                    assert_empty!(all_log_output.stderr);
+                    assert_eq!(all_log_output.stdout, "worker process overridden!\n");
+                },
             );
         },
     );
