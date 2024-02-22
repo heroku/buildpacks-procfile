@@ -1,7 +1,7 @@
 [package]
 name = "procfile-buildpack"
 edition = "2021"
-rust-version = "1.75"
+rust-version = "1.76"
 
 [lints.rust]
 unreachable_pub = "warn"
@@ -15,10 +15,10 @@ unwrap_used = "warn"
 
 [dependencies]
 indoc = "2"
-libcnb = "0.11"
-libherokubuildpack = { version = "0.11", default-features = false, features = ["error", "log"] }
+libcnb = "0.18"
+libherokubuildpack = { version = "0.18", default-features = false, features = ["error", "log"] }
 linked-hash-map = "0.5"
 regex = "1"
 
 [dev-dependencies]
-libcnb-test = "0.11"
+libcnb-test = "0.18"
