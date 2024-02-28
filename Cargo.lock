@@ -420,9 +420,9 @@ checksum = "9c198f91728a82281a64e1f4f9eeb25d82cb32a5de251c6bd1b5154d63a8e7bd"
 
 [[package]]
 name = "libcnb"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01a3489808fbae57c1b5a66a4c38062cb1baa66548a4a1c738f297e7a29df944"
+checksum = "7db217651ab45597152c94ad849defb079fc7ced7d72de2fcc2e9c3dec6e990e"
 dependencies = [
  "libcnb-common",
  "libcnb-data",
@@ -437,9 +437,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-common"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b49fe66eb86c6f49b54a1120ea6e7f0770d61351aa1a17fedba98c991f6097d"
+checksum = "f3abf2056162dd76ade12884e002ba88f068a26594b2eb9579ef8af40cfbca1b"
 dependencies = [
  "serde",
  "thiserror",
@@ -448,9 +448,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-data"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baab61150f401f2570a338993e667ce2c5988e2df6c1fa95ef359953fa24ac02"
+checksum = "afc6b01af8b624193ca6b247667ef82f36dd85d62b90f5a7e8d047b46642ce7c"
 dependencies = [
  "fancy-regex",
  "libcnb-proc-macros",
@@ -462,9 +462,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-package"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce362548e8ca30b04100ae41dd3fdf8808ac966bf78ecc32510024ad75c0f9bf"
+checksum = "2678c2e0882c622a01d415e64625258849e533aeba8531110a5b3db9593d97d5"
 dependencies = [
  "cargo_metadata",
  "ignore",
@@ -479,9 +479,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-proc-macros"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d45827270d4493f5634a96fdc1238653fb00b12abc1b6fc4d1e7ed920f3785b"
+checksum = "b0308e3b554dd8b0b969ab42d19b50b02bdb712dc72652849fa1e33bd1d16709"
 dependencies = [
  "cargo_metadata",
  "fancy-regex",
@@ -491,9 +491,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-test"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d89d3c16306a2719734316cc523dc6320112d6d51121392324a4afde7ea64366"
+checksum = "f094d9c229c481fb868d36231dcc4b7596491503d0a297eb239b08e942eb483c"
 dependencies = [
  "fastrand",
  "fs_extra",
@@ -506,9 +506,9 @@ dependencies = [
 
 [[package]]
 name = "libherokubuildpack"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "731a60414a045a405de55080b6c36b3116829365a15778cf1ffb94305190443d"
+checksum = "410f8f0e8cfcaffd92423211b5e280d2bebe3a5508d543fdcd451459d14debca"
 dependencies = [
  "libcnb",
  "termcolor",
