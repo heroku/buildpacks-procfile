@@ -4,7 +4,7 @@ api = "0.10"
 id = "heroku/procfile"
 version = "3.0.0"
 name = "Heroku Procfile"
-homepage = "https://github.com/heroku/procfile-cnb"
+homepage = "https://github.com/heroku/buildpacks-procfile"
 description = "Heroku's Procfile buildpack."
 keywords = ["procfile", "processes", "heroku"]
 
