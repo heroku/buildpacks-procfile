@@ -1,6 +1,6 @@
 # Heroku Cloud Native Procfile Buildpack
 
-[![CI](https://github.com/heroku/procfile-cnb/actions/workflows/ci.yml/badge.svg)](https://github.com/heroku/procfile-cnb/actions/workflows/ci.yml)
+[![CI](https://github.com/heroku/buildpacks-procfile/actions/workflows/ci.yml/badge.svg)](https://github.com/heroku/buildpacks-procfile/actions/workflows/ci.yml)
 
 This is a [Cloud Native Buildpack](https://buildpacks.io/) that replicates the behavior of
 [`Procfile`](https://devcenter.heroku.com/articles/procfile) from non-CNB Heroku Builds.
