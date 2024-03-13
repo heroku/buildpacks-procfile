@@ -23,4 +23,4 @@ os = "linux"
 arch = "amd64"
 
 [metadata.release]
-image = { repository = "docker.io/heroku/procfile-cnb" }
+image = { repository = "docker.io/heroku/buildpack-procfile" }
