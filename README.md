@@ -9,7 +9,7 @@ for Procfile applications. It replicates the behavior of [`Procfile`](https://de
 from builds on the Heroku Platform.
 
 > [!IMPORTANT]
-> This is a [Cloud Native Buildpack][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project, which is in beta.
+> This is a [Cloud Native Buildpack][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project, which is in preview.
 
 ## Usage
 
