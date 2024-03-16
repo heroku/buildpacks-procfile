@@ -35,8 +35,7 @@ to exist in the root project directory.
 
 ## Configuration
 
-You may configure which processes are included in a build result by using a
-YAML-like syntax with bash commands:
+You may configure which process types and commands are included in a build result [like this](https://devcenter.heroku.com/articles/procfile#procfile-format):
 
 ```yaml
 # Example Procfile
