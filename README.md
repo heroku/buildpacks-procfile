@@ -5,7 +5,7 @@
 
 
 `heroku/procfile` is the [Heroku Cloud Native Buildpack][heroku-buildpacks]
-for Procfile applications. It replicates the behavior of [`Procfile`](https://devcenter.heroku.com/articles/procfile)
+for applications that use a Procfile to declare process types. It replicates the behavior of [`Procfile`](https://devcenter.heroku.com/articles/procfile)
 from builds on the Heroku Platform.
 
 > [!IMPORTANT]
