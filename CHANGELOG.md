@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.1] - 2024-05-02
 
-- No changes.
+- No changes to functionality. New release to fix incorrectly published artifacts in 3.1.0.
 
 ## [3.1.0] - 2024-05-02
 
