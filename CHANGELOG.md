@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for `arm64` and multi-arch images. ([#225](https://github.com/heroku/buildpacks-procfile/pull/225))
+
 ## [3.0.1] - 2024-03-13
 
 ### Changed
