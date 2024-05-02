@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Support for `arm64` and multi-arch images.
+
 ## [3.0.1] - 2024-03-13
 
 ### Changed
