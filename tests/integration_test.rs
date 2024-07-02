@@ -110,6 +110,27 @@ fn test_multiple_non_web_procfile() {
 
 #[test]
 #[ignore = "integration test"]
+// Tests use of compound bash commands, both quote styles, nested quoting and variable interpolation.
+fn test_complex_command_procfile() {
+    TestRunner::default().build(
+        BuildConfig::new(
+            "heroku/builder:22",
+            "tests/fixtures/complex_command_procfile",
+        ),
+        |context| {
+            context.start_container(ContainerConfig::new().env("PORT", "12345"), |container| {
+                let log_output = container.logs_wait();
+                assert_eq!(
+                    log_output.stdout,
+                    "this is the \"web\" process!\n\"PORT\" is set to: '12345'\n"
+                );
+            });
+        },
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
 // Tests a Procfile that happens to not be valid YAML, but is still valid according
 // to the supported Procfile syntax.
 fn test_not_yaml_procfile() {
