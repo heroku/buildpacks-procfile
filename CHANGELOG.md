@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded Rust dependencies. ([#232](https://github.com/heroku/buildpacks-procfile/pull/232) and [#235](https://github.com/heroku/buildpacks-procfile/pull/235))
+
+### Removed
+
+- Removed `[[stacks]]` table workaround from `buildpack.toml`. ([#231](https://github.com/heroku/buildpacks-procfile/pull/231))
+
 ## [3.1.1] - 2024-05-02
+
+### Fixed
 
 - No changes to functionality. New release to fix incorrectly published artifacts in 3.1.0.
 
