@@ -1,15 +1,18 @@
 api = "0.10"
 
 [buildpack]
-id = "heroku/procfile"
+id = "neeto-deploy/procfile"
 version = "3.1.2"
-name = "Heroku Procfile"
-homepage = "https://github.com/heroku/buildpacks-procfile"
+name = "neetodeploy Procfile"
+homepage = "https://github.com/bigbinary/buildpacks-procfile"
 description = "Heroku's Procfile buildpack."
 keywords = ["procfile", "processes", "heroku"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
+
+[[stacks]]
+id = "*"
 
 [[targets]]
 os = "linux"
