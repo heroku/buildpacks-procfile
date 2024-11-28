@@ -20,7 +20,7 @@ To build an application codebase with a `Procfile` into a production image:
 
 ```bash
 $ cd ~/workdir/sample-procfile-app
-$ pack build sample-app --builder heroku/builder:22
+$ pack build sample-app --builder heroku/builder:24
 ```
 
 Then run the image:
