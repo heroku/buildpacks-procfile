@@ -66,9 +66,9 @@ checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 
 [[package]]
 name = "bstr"
-version = "1.10.0"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40723b8fb387abc38f4f4a37c09073622e41dd12327033091ef8950659e6dc0c"
+checksum = "1a68f1f47cdf0ec8ee4b941b2eee2a80cb796db73118c0dd09ac63fbe405be22"
 dependencies = [
  "memchr",
  "serde",
@@ -97,9 +97,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-platform"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24b1f0365a6c6bb4020cd05806fd0d33c44d38046b8bd7f0e40814b9763cabfc"
+checksum = "e35af189006b9c0f00a064685c727031e3ed2d8020f7ba284d78cc2671bd36ea"
 dependencies = [
  "serde",
 ]
@@ -115,14 +115,14 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "thiserror 1.0.66",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
 name = "cc"
-version = "1.1.28"
+version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e80e3b6a3ab07840e1cae9b0666a63970dc28e8ed5ffbcdacbfc760c281bfc1"
+checksum = "f34d93e62b03caf570cccc334cbc6c2fceca82f39211051345108adcba3eebdc"
 dependencies = [
  "shlex",
 ]
@@ -199,12 +199,12 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
 name = "errno"
-version = "0.3.9"
+version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "534c5cf6194dfab3db3242765c03bbe257cf92f22b38f6bc0c58d59108a820ba"
+checksum = "33d852cb9b869c2a9b3df2f71a3074817f01e1844f839a144f5fcef059a4eb5d"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -332,9 +332,9 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.15.0"
+version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e087f84d4f86bf4b218b927129862374b72199ae7d8657835f1e89000eea4fb"
+checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 
 [[package]]
 name = "home"
@@ -386,9 +386,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da"
+checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown",
@@ -402,16 +402,17 @@ checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
 
 [[package]]
 name = "itoa"
-version = "1.0.11"
+version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
+checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
 
 [[package]]
 name = "js-sys"
-version = "0.3.71"
+version = "0.3.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cb94a0ffd3f3ee755c20f7d8752f45cac88605a4dcf808abcff72873296ec7b"
+checksum = "a865e038f7f6ed956f788f0d7d60c541fff74c7bd74272c5d4cf15c63743e705"
 dependencies = [
+ "once_cell",
  "wasm-bindgen",
 ]
 
@@ -575,7 +576,7 @@ dependencies = [
  "js-sys",
  "once_cell",
  "pin-project-lite",
- "thiserror 1.0.66",
+ "thiserror 1.0.69",
  "urlencoding",
 ]
 
@@ -610,14 +611,14 @@ dependencies = [
  "ordered-float",
  "percent-encoding",
  "rand",
- "thiserror 1.0.66",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
 name = "ordered-float"
-version = "4.3.0"
+version = "4.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44d501f1a72f71d3c063a6bbc8f7271fa73aa09fe5d6283b6571e2ed176a2537"
+checksum = "c65ee1f9701bf938026630b455d5315f490640234259037edb259798b3bcf85e"
 dependencies = [
  "num-traits",
 ]
@@ -640,9 +641,9 @@ dependencies = [
 
 [[package]]
 name = "pin-project-lite"
-version = "0.2.14"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bda66fc9667c18cb2758a2ac84d1167245054bcf85d5d1aaa6923f45801bdd02"
+checksum = "915a1e146535de9163f3987b8944ed8cf49a18bb0056bcebcdcece385cece4ff"
 
 [[package]]
 name = "pin-utils"
@@ -733,9 +734,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.4.8"
+version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "368758f23274712b504848e9d5a6f010445cc8b87a7cdb4d7cbee666c1288da3"
+checksum = "809e8dc61f6de73b46c85f4c96486310fe304c434cfa43669d7b40f711150908"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -807,9 +808,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.128"
+version = "1.0.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ff5456707a1de34e7e37f2a6fd3d3f808c318259cbd01ab6377795054b483d8"
+checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
 dependencies = [
  "itoa",
  "memchr",
@@ -876,11 +877,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.66"
+version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d171f59dbaa811dbbb1aee1e73db92ec2b122911a48e1390dfe327a821ddede"
+checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl 1.0.66",
+ "thiserror-impl 1.0.69",
 ]
 
 [[package]]
@@ -894,9 +895,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.66"
+version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b08be0f17bd307950653ce45db00cd31200d82b624b36e181337d9c7d92765b5"
+checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -950,9 +951,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.13"
+version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e91b56cd4cadaeb79bbf1a5645f6b4f8dc5bde8834ad5894a8db35fda9efa1fe"
+checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
 
 [[package]]
 name = "uriparse"
@@ -988,9 +989,9 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.94"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef073ced962d62984fb38a36e5fdc1a2b23c9e0e1fa0689bb97afa4202ef6887"
+checksum = "d15e63b4482863c109d70a7b8706c1e364eb6ea449b201a76c5b89cedcec2d5c"
 dependencies = [
  "cfg-if",
  "once_cell",
@@ -999,9 +1000,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.94"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4bfab14ef75323f4eb75fa52ee0a3fb59611977fd3240da19b2cf36ff85030e"
+checksum = "8d36ef12e3aaca16ddd3f67922bc63e48e953f126de60bd33ccc0101ef9998cd"
 dependencies = [
  "bumpalo",
  "log",
@@ -1014,9 +1015,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.94"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7bec9830f60924d9ceb3ef99d55c155be8afa76954edffbb5936ff4509474e7"
+checksum = "705440e08b42d3e4b36de7d66c944be628d579796b8090bfa3471478a2260051"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -1024,9 +1025,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.94"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c74f6e152a76a2ad448e223b0fc0b6b5747649c3d769cc6bf45737bf97d0ed6"
+checksum = "98c9ae5a76e46f4deecd0f0255cc223cfa18dc9b261213b8aa0c7b36f61b3f1d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1037,9 +1038,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.94"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a42f6c679374623f295a8623adfe63d9284091245c3504bde47c17a3ce2777d9"
+checksum = "6ee99da9c5ba11bd675621338ef6fa52296b76b83305e9b6e5c77d4c286d6d49"
 
 [[package]]
 name = "which"
