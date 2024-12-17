@@ -75,6 +75,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "bullet_stream"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e038a9e6b7e36319ab42141434b0c7a93f7714aa90abf63cc5086e106027bb7"
+
+[[package]]
 name = "bumpalo"
 version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -673,6 +679,7 @@ dependencies = [
 name = "procfile-buildpack"
 version = "0.0.0"
 dependencies = [
+ "bullet_stream",
  "indoc",
  "libcnb",
  "libcnb-test",
