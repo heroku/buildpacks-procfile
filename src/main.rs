@@ -4,12 +4,13 @@ mod procfile;
 
 use crate::error::{error_handler, ProcfileBuildpackError};
 use crate::procfile::Procfile;
+use bullet_stream::{style, Print};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack};
-use libherokubuildpack::log::{log_header, log_info};
 use std::fs;
+use std::io::stdout;
 use std::path::Path;
 
 #[cfg(test)]
@@ -31,9 +32,11 @@ impl Buildpack for ProcfileBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Discovering process types");
+        let mut bullet = Print::new(stdout())
+            .h2("Procfile Buildpack")
+            .bullet("Processes");
 
-        let procfile = fs::read_to_string(context.app_dir.join("Procfile"))
+        let procfile: Procfile = fs::read_to_string(context.app_dir.join("Procfile"))
             .map_err(ProcfileBuildpackError::CannotReadProcfileContents)
             .and_then(|procfile_contents| {
                 procfile_contents
@@ -41,10 +44,15 @@ impl Buildpack for ProcfileBuildpack {
                     .map_err(ProcfileBuildpackError::ProcfileParsingError)
             })?;
 
-        log_info(format!(
-            "Procfile declares types -> {}",
-            format_processes_for_log(&procfile)
-        ));
+        if procfile.is_empty() {
+            bullet = bullet.sub_bullet("(none)");
+        } else {
+            for (name, command) in &procfile.processes {
+                bullet = bullet.sub_bullet(format!("{name}: {}", style::command(command)));
+            }
+        }
+
+        bullet.done().done();
 
         BuildResultBuilder::new()
             .launch(
@@ -62,19 +70,6 @@ impl Buildpack for ProcfileBuildpack {
 
 fn dir_has_procfile(app_dir: impl AsRef<Path>) -> bool {
     app_dir.as_ref().join("Procfile").exists()
-}
-
-fn format_processes_for_log(procfile: &Procfile) -> String {
-    if procfile.is_empty() {
-        String::from("(none)")
-    } else {
-        procfile
-            .processes
-            .keys()
-            .cloned()
-            .collect::<Vec<String>>()
-            .join(", ")
-    }
 }
 
 // Implements the main function and wires up the framework for the given buildpack.
@@ -95,28 +90,5 @@ mod tests {
     fn test_missing_procfile_detect() {
         let app_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/missing_procfile");
         assert!(!dir_has_procfile(app_dir));
-    }
-
-    #[test]
-    fn test_empty_names_from_processes() {
-        let procfile = Procfile::new();
-
-        let out = format_processes_for_log(&procfile);
-        assert_eq!(out, "(none)");
-    }
-
-    #[test]
-    fn test_valid_process_names_from_processes() {
-        let mut procfile = Procfile::new();
-
-        procfile.insert("web", "rails -s");
-
-        let out = format_processes_for_log(&procfile);
-        assert_eq!(out, "web");
-
-        procfile.insert("worker", "rake sidekiq");
-
-        let out = format_processes_for_log(&procfile);
-        assert_eq!(out, "web, worker");
     }
 }
