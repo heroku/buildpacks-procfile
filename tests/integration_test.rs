@@ -21,8 +21,12 @@ fn test_web_and_worker_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 indoc! {"
-                    [Discovering process types]
-                    Procfile declares types -> web, worker
+                    ## Procfile Buildpack
+
+                    - Processes
+                      - web: `echo 'this is the web process!'`
+                      - worker: `echo 'this is the worker process!'`
+                    - Done (finished in < 0.1s)
                 "}
             );
 
@@ -51,8 +55,11 @@ fn test_worker_only_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 indoc! {"
-                    [Discovering process types]
-                    Procfile declares types -> worker
+                    ## Procfile Buildpack
+
+                    - Processes
+                      - worker: `echo 'this is the worker process!'`
+                    - Done (finished in < 0.1s)
                 "}
             );
 
@@ -79,8 +86,12 @@ fn test_multiple_non_web_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 indoc! {"
-                    [Discovering process types]
-                    Procfile declares types -> worker, console
+                    ## Procfile Buildpack
+
+                    - Processes
+                      - worker: `echo 'this is the worker process!'`
+                      - console: `echo 'this is the console process!'`
+                    - Done (finished in < 0.1s)
                 "}
             );
 
@@ -140,8 +151,11 @@ fn test_not_yaml_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 indoc! {"
-                    [Discovering process types]
-                    Procfile declares types -> web
+                    ## Procfile Buildpack
+
+                    - Processes
+                      - web: `echo foo: bar   `
+                    - Done (finished in < 0.1s)
                 "}
             );
             assert_contains!(context.pack_stdout, "Setting default process type 'web'");
@@ -162,8 +176,11 @@ fn test_empty_procfile() {
             assert_contains!(
                 context.pack_stdout,
                 indoc! {"
-                    [Discovering process types]
-                    Procfile declares types -> (none)
+                    ## Procfile Buildpack
+
+                    - Processes
+                      - (none)
+                    - Done (finished in < 0.1s)
                 "}
             );
             assert_contains!(context.pack_stdout, "no default process type");
