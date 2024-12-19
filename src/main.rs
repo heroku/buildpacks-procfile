@@ -33,7 +33,7 @@ impl Buildpack for ProcfileBuildpack {
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let mut bullet = Print::new(stdout())
             .h2("Procfile Buildpack")
-            .bullet("Processes");
+            .bullet(format!("Processes from {}", style::value("Procfile")));
 
         let procfile: Procfile = fs_err::read_to_string(context.app_dir.join("Procfile"))
             .map_err(ProcfileBuildpackError::CannotReadProcfileContents)

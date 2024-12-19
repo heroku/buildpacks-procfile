@@ -23,7 +23,7 @@ fn test_web_and_worker_procfile() {
                 indoc! {"
                     ## Procfile Buildpack
 
-                    - Processes
+                    - Processes from `Procfile`
                       - web: `echo 'this is the web process!'`
                       - worker: `echo 'this is the worker process!'`
                     - Done (finished in < 0.1s)
@@ -57,7 +57,7 @@ fn test_worker_only_procfile() {
                 indoc! {"
                     ## Procfile Buildpack
 
-                    - Processes
+                    - Processes from `Procfile`
                       - worker: `echo 'this is the worker process!'`
                     - Done (finished in < 0.1s)
                 "}
@@ -88,7 +88,7 @@ fn test_multiple_non_web_procfile() {
                 indoc! {"
                     ## Procfile Buildpack
 
-                    - Processes
+                    - Processes from `Procfile`
                       - worker: `echo 'this is the worker process!'`
                       - console: `echo 'this is the console process!'`
                     - Done (finished in < 0.1s)
@@ -153,7 +153,7 @@ fn test_not_yaml_procfile() {
                 indoc! {"
                     ## Procfile Buildpack
 
-                    - Processes
+                    - Processes from `Procfile`
                       - web: `echo foo: bar   `
                     - Done (finished in < 0.1s)
                 "}
@@ -178,7 +178,7 @@ fn test_empty_procfile() {
                 indoc! {"
                     ## Procfile Buildpack
 
-                    - Processes
+                    - Processes from `Procfile`
                       - (none)
                     - Done (finished in < 0.1s)
                 "}
