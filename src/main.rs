@@ -9,7 +9,6 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack};
-use std::fs;
 use std::io::stdout;
 use std::path::Path;
 
@@ -36,7 +35,7 @@ impl Buildpack for ProcfileBuildpack {
             .h2("Procfile Buildpack")
             .bullet("Processes");
 
-        let procfile: Procfile = fs::read_to_string(context.app_dir.join("Procfile"))
+        let procfile: Procfile = fs_err::read_to_string(context.app_dir.join("Procfile"))
             .map_err(ProcfileBuildpackError::CannotReadProcfileContents)
             .and_then(|procfile_contents| {
                 procfile_contents
