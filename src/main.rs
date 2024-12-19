@@ -44,13 +44,12 @@ impl Buildpack for ProcfileBuildpack {
             })?;
 
         if procfile.is_empty() {
-            bullet = bullet.sub_bullet("(none)");
+            bullet = bullet.sub_bullet("Empty file, no processes defined");
         } else {
             for (name, command) in &procfile.processes {
                 bullet = bullet.sub_bullet(format!("{name}: {}", style::command(command)));
             }
         }
-
         bullet.done().done();
 
         BuildResultBuilder::new()

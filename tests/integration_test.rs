@@ -179,7 +179,7 @@ fn test_empty_procfile() {
                     ## Procfile Buildpack
 
                     - Processes from `Procfile`
-                      - (none)
+                      - Empty file, no processes defined
                     - Done (finished in < 0.1s)
                 "}
             );
