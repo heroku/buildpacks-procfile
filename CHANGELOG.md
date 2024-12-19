@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+### Changed
 
-- Build output style updated to `bullet_stream`. ([#252](https://github.com/heroku/buildpacks-procfile/pull/252))
+- Build output style updated to `bullet_stream`. Output now also includes the commands that were pulled from the `Procfile` in the output. ([#252](https://github.com/heroku/buildpacks-procfile/pull/252))
 
 ## [3.1.2] - 2024-07-02
 
