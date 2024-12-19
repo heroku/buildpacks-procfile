@@ -34,14 +34,12 @@ impl FromStr for Procfile {
     type Err = ProcfileParsingError;
 
     fn from_str(procfile_contents: &str) -> Result<Self, Self::Err> {
-        // Using `.expect()` since these can only fail if we've supplied invalid an invalid regex,
-        // which would be caught by both the `invalid_regex` Clippy lint and the buildpack's tests.
-        let re_carriage_return_newline = Regex::new("\\r\\n?").expect("Invalid Procfile regex");
-        let re_multiple_newline = Regex::new("\\n*\\z").expect("Invalid Procfile regex");
+        let re_carriage_return_newline = Regex::new("\\r\\n?").expect("Clippy checked");
+        let re_multiple_newline = Regex::new("\\n*\\z").expect("Clippy checked");
 
         // https://github.com/heroku/codon/blob/2613554383cb298076b4a722f4a1aa982ad757e6/lib/slug_compiler/slug.rb#L538-L545
         let re_procfile_entry = Regex::new("^[[:space:]]*([a-zA-Z0-9_-]+):?\\s+(.*)[[:space:]]*")
-            .expect("Invalid Procfile regex");
+            .expect("Clippy checked");
 
         let procfile_contents = re_carriage_return_newline.replace_all(procfile_contents, "\n");
         let procfile_contents = re_multiple_newline.replace(&procfile_contents, "\n");
