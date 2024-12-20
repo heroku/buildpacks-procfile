@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2024-12-20
+
+- No changes.
+
 ## [3.2.0] - 2024-12-20
 
 ### Changed
@@ -103,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of Rust procfile buildpack, the old Go buildpack is now archived.
 - Re-write logic of Procfile parsing to match Heroku's behavior, which has different behavior from the Go version (that assumed that a Procfile was YAML syntax).
 
-[unreleased]: https://github.com/heroku/buildpacks-procfile/compare/v3.2.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-procfile/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/heroku/buildpacks-procfile/compare/v3.2.0...v4.0.0
 [3.2.0]: https://github.com/heroku/buildpacks-procfile/compare/v3.1.2...v3.2.0
 [3.1.2]: https://github.com/heroku/buildpacks-procfile/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/heroku/buildpacks-procfile/compare/v3.1.0...v3.1.1
