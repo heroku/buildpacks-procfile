@@ -1,13 +1,13 @@
 use crate::launch::ProcfileConversionError;
-use crate::procfile::ProcfileParsingError;
+use crate::procfile::ProcfileError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
 
 #[derive(Debug)]
 pub(crate) enum ProcfileBuildpackError {
     CannotReadProcfileContents(std::io::Error),
-    ProcfileParsingError(ProcfileParsingError),
     ProcfileConversionError(ProcfileConversionError),
+    InvalidProcfile(ProcfileError),
 }
 
 pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
@@ -23,9 +23,6 @@ pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
                 "},
             );
         }
-        // There are currently no ways in which parsing can fail, however we will add some in the future:
-        // https://github.com/heroku/buildpacks-procfile/issues/73
-        ProcfileBuildpackError::ProcfileParsingError(parsing_error) => match parsing_error {},
         ProcfileBuildpackError::ProcfileConversionError(conversion_error) => match conversion_error
         {
             ProcfileConversionError::InvalidProcessType(libcnb_error) => {
@@ -44,6 +41,16 @@ pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
                 );
             }
         },
+        ProcfileBuildpackError::InvalidProcfile(procfile_error) => log_error(
+            "Invalid Procfile format",
+            formatdoc! {"
+                The provided `Procfile` contains an invalid format and the buildpack cannot continue.
+
+                To fix this problem please correct the following error and commit the results to git:
+
+                {procfile_error}
+            "},
+        ),
     }
 }
 

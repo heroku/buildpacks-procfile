@@ -3,7 +3,7 @@ mod launch;
 mod procfile;
 
 use crate::error::{error_handler, ProcfileBuildpackError};
-use crate::procfile::Procfile;
+use crate::procfile::ProcfileParsed;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
@@ -38,7 +38,7 @@ impl Buildpack for ProcfileBuildpack {
             .and_then(|procfile_contents| {
                 procfile_contents
                     .parse()
-                    .map_err(ProcfileBuildpackError::ProcfileParsingError)
+                    .map_err(ProcfileBuildpackError::InvalidProcfile)
             })?;
 
         log_info(format!(
@@ -64,8 +64,8 @@ fn dir_has_procfile(app_dir: impl AsRef<Path>) -> bool {
     app_dir.as_ref().join("Procfile").exists()
 }
 
-fn format_processes_for_log(procfile: &Procfile) -> String {
-    if procfile.is_empty() {
+fn format_processes_for_log(procfile: &ProcfileParsed) -> String {
+    if procfile.processes.is_empty() {
         String::from("(none)")
     } else {
         procfile
@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_empty_names_from_processes() {
-        let procfile = Procfile::new();
+        let procfile = ProcfileParsed::new();
 
         let out = format_processes_for_log(&procfile);
         assert_eq!(out, "(none)");
@@ -107,8 +107,7 @@ mod tests {
 
     #[test]
     fn test_valid_process_names_from_processes() {
-        let mut procfile = Procfile::new();
-
+        let mut procfile = ProcfileParsed::new();
         procfile.insert("web", "rails -s");
 
         let out = format_processes_for_log(&procfile);

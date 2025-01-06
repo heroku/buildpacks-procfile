@@ -695,7 +695,6 @@ dependencies = [
  "libcnb-test",
  "libherokubuildpack",
  "linked-hash-map",
- "regex",
  "thiserror 2.0.9",
  "winnow",
 ]
