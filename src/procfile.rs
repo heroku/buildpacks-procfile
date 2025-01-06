@@ -217,6 +217,7 @@ fn parse_strict_key_val(input: &mut &str) -> PResult<(String, String)> {
         .parse_next(input)?;
 
     let val = preceded(space0, till_newline_or_eof)
+        .verify(|value: &str| !value.is_empty())
         .context(StrContext::Label("value"))
         .map(std::string::ToString::to_string)
         .parse_next(input)?;
