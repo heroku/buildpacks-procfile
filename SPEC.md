@@ -34,7 +34,7 @@ The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SH
   - Key length MUST be within the range `1..=63`
   - An implementation MAY accept `_` as a middle character provided it converts it to `-` and issues a warning.
   - An implementation MAY accept an uppercase character provided it is converted to lowercase characters and issues a warning.
-  - A key MAY begin with zero or more spaces provided they are not included in the return key.
+  - A key MAY be preceded with zero or more spaces provided they are not included in the return key and a warning is issued.
 - Value
   - A value MUST contain 1 or more non-whitespace characters.
   - A value MUST be terminated by a newline or EOF.
