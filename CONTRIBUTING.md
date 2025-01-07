@@ -5,6 +5,10 @@ the recommendations and requirements for how to best contribute to Heroku
 Cloud Native Buildpacks. We strive to obey these as best as possible. As
 always, thanks for contributing.
 
+## CNB Procfile format
+
+The format of a Procfile is defined in the [SPEC.md](SPEC.md) file. If parsing behavior differs between that description it is a bug and either the specification or parser must be updated.
+
 ## Governance Model: Salesforce Sponsored
 
 The intent and goal of open sourcing this project is to increase the contributor
