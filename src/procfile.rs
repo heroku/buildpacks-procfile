@@ -35,14 +35,14 @@ impl Procfile {
 }
 
 #[derive(Debug)]
-pub(crate) enum ProcfileParsingError {
+pub(crate) enum ProcfileError {
     ParseError(ProcfileParseError),
 }
 
-impl Display for ProcfileParsingError {
+impl Display for ProcfileError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ProcfileParsingError::ParseError(error) => write!(f, "{error}"),
+            ProcfileError::ParseError(error) => write!(f, "{error}"),
         }
     }
 }
@@ -74,12 +74,12 @@ impl ProcfileParseError {
 }
 
 impl std::str::FromStr for Procfile {
-    type Err = ProcfileParsingError;
+    type Err = ProcfileError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        let (processes, mut warnings) = parse_procfile.parse(input).map_err(|e| {
-            ProcfileParsingError::ParseError(ProcfileParseError::from_parse(&e, input))
-        })?;
+        let (processes, mut warnings) = parse_procfile
+            .parse(input)
+            .map_err(|e| ProcfileError::ParseError(ProcfileParseError::from_parse(&e, input)))?;
 
         if processes.is_empty() {
             warnings.push("Empty file, no processes defined".to_string());

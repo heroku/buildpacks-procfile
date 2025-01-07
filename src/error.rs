@@ -1,12 +1,12 @@
 use crate::launch::ProcfileConversionError;
-use crate::procfile::ProcfileParsingError;
+use crate::procfile::ProcfileError;
 use bullet_stream::Print;
 use indoc::formatdoc;
 
 #[derive(Debug)]
 pub(crate) enum ProcfileBuildpackError {
     CannotReadProcfileContents(std::io::Error),
-    ProcfileParsingError(ProcfileParsingError),
+    ProcfileParsingError(ProcfileError),
     ProcfileConversionError(ProcfileConversionError),
 }
 
