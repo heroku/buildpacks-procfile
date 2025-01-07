@@ -28,6 +28,7 @@ The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SH
 - Key/Value pairs
   - A line MAY contain a key/value pair where the key represents the name of a process and the value represents a command
   - A key MUST be separated from its value by a colon (`:`) followed by zero or more spaces.
+  - Duplicate keys MUST be allowed and the last entry MUST take precedence. A warning SHOULD be issued.
 - Key
   - A key's first and last character MUST be a lowercase alphanumeric (a-z0-9) character (but not `-`).
   - All other key (middle) characters MUST be lowercase alphanumeric (a-z0-9) characters or hyphen `-`.
