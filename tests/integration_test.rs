@@ -154,6 +154,7 @@ fn test_not_yaml_procfile() {
                     ## Procfile Buildpack
 
                     - Processes from `Procfile`
+                      - WARNING: Procfile key `   web` has been corrected to `web`. Please update your Procfile.
                       - web: `echo foo: bar   `
                     - Done (finished in < 0.1s)
                 "}
@@ -179,7 +180,7 @@ fn test_empty_procfile() {
                     ## Procfile Buildpack
 
                     - Processes from `Procfile`
-                      - Empty file, no processes defined
+                      - WARNING: Empty file, no processes defined
                     - Done (finished in < 0.1s)
                 "}
             );

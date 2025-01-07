@@ -1,6 +1,7 @@
 //! Contains logic for parsing the `Procfile` format
 use std::fmt::Display;
 
+use bullet_stream::style;
 use linked_hash_map::LinkedHashMap;
 use winnow::{
     ascii::{line_ending, space0, till_line_ending},
@@ -30,10 +31,6 @@ impl Procfile {
     #[cfg(test)]
     pub(crate) fn insert(&mut self, key: &str, value: &str) {
         self.processes.insert(key.to_string(), value.to_string());
-    }
-
-    pub(crate) fn is_empty(&self) -> bool {
-        self.processes.is_empty()
     }
 }
 
@@ -129,7 +126,11 @@ fn parse_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>, V
                 Ok((original, fixed)) => {
                     let value = parse_value.parse_next(input)?;
 
-                    warnings.push(format!("Procfile key `{original}` has been corrected to `{fixed}`. Please update your Procfile\n\n{fixed}: {value}"));
+                    warnings.push(format!(
+                        "Procfile key {} has been corrected to {}. Please update your Procfile.",
+                        style::value(&original),
+                        style::value(&fixed)
+                    ));
                     key_values.push((fixed, value));
                 }
                 Err(err) => {
@@ -312,6 +313,7 @@ fn parse_comment<'s>(input: &mut &'s str) -> PResult<&'s str> {
 
 #[cfg(test)]
 mod tests {
+    use bullet_stream::strip_ansi;
     use libcnb_test::assert_contains;
 
     use super::*;
@@ -326,7 +328,7 @@ mod tests {
         let input = "IamAvalidKeyButNotStrictly: echo 'done'";
         let result: Procfile = input.parse().unwrap();
         assert_eq!(1, result.warnings.len());
-        assert_eq!(&"Procfile key `IamAvalidKeyButNotStrictly` has been corrected to `iamavalidkeybutnotstrictly`. Please update your Procfile\n\niamavalidkeybutnotstrictly: echo 'done'".to_string(), result.warnings.last().unwrap());
+        assert_eq!("Procfile key `IamAvalidKeyButNotStrictly` has been corrected to `iamavalidkeybutnotstrictly`. Please update your Procfile.".to_string(),  strip_ansi(result.warnings.last().unwrap()));
         assert_eq!(
             "echo 'done'",
             result.processes.get("iamavalidkeybutnotstrictly").unwrap()

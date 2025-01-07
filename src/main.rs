@@ -43,12 +43,13 @@ impl Buildpack for ProcfileBuildpack {
                     .map_err(ProcfileBuildpackError::ProcfileParsingError)
             })?;
 
-        if procfile.is_empty() {
-            bullet = bullet.sub_bullet("Empty file, no processes defined");
-        } else {
-            for (name, command) in &procfile.processes {
-                bullet = bullet.sub_bullet(format!("{name}: {}", style::command(command)));
-            }
+        let warning_prefix = style::important("WARNING:");
+        for message in &procfile.warnings {
+            bullet = bullet.sub_bullet(format!("{warning_prefix} {message}"));
+        }
+
+        for (name, command) in &procfile.processes {
+            bullet = bullet.sub_bullet(format!("{name}: {cmd}", cmd = style::command(command)));
         }
         bullet.done().done();
 
