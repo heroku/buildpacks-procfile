@@ -37,4 +37,4 @@ The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SH
   - A key MAY begin with zero or more spaces provided they are not included in the return key.
 - Value
   - A value MUST contain 1 or more non-whitespace characters.
-  - A value MUST terminated by a newline or EOF.
+  - A value MUST be terminated by a newline or EOF.
