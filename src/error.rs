@@ -25,7 +25,9 @@ pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
         }
         // There are currently no ways in which parsing can fail, however we will add some in the future:
         // https://github.com/heroku/buildpacks-procfile/issues/73
-        ProcfileBuildpackError::ProcfileParsingError(parsing_error) => match parsing_error {},
+        ProcfileBuildpackError::ProcfileParsingError(parsing_error) => match parsing_error {
+            ProcfileParsingError::ParseError(_procfile_parse_error) => todo!(),
+        },
         ProcfileBuildpackError::ProcfileConversionError(conversion_error) => match conversion_error
         {
             ProcfileConversionError::InvalidProcessType(libcnb_error) => {
