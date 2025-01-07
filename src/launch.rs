@@ -1,11 +1,11 @@
-use crate::procfile::ProcfileParsed;
+use crate::procfile::Procfile;
 use libcnb::data::launch::{Launch, Process, ProcessType, WorkingDirectory};
 use std::str::FromStr;
 
-impl TryFrom<ProcfileParsed> for Launch {
+impl TryFrom<Procfile> for Launch {
     type Error = ProcfileConversionError;
 
-    fn try_from(value: ProcfileParsed) -> Result<Self, Self::Error> {
+    fn try_from(value: Procfile) -> Result<Self, Self::Error> {
         let mut launch = Launch {
             labels: vec![],
             processes: vec![],
@@ -46,7 +46,7 @@ mod test {
 
     #[test]
     fn test_single_web_process() {
-        let mut procfile = ProcfileParsed::new();
+        let mut procfile = Procfile::new();
         procfile.insert("web", "web_command");
 
         let launch: Launch = procfile.try_into().unwrap();
@@ -65,7 +65,7 @@ mod test {
 
     #[test]
     fn test_single_non_web_process() {
-        let mut procfile = ProcfileParsed::new();
+        let mut procfile = Procfile::new();
         procfile.insert("xxx", "xxx_command");
 
         let launch: Launch = procfile.try_into().unwrap();
@@ -84,7 +84,7 @@ mod test {
 
     #[test]
     fn test_web_and_additional_process() {
-        let mut procfile = ProcfileParsed::new();
+        let mut procfile = Procfile::new();
         procfile.insert("web", "web_command");
         procfile.insert("foo", "foo_command");
 
@@ -113,7 +113,7 @@ mod test {
 
     #[test]
     fn test_multiple_non_web_processes() {
-        let mut procfile = ProcfileParsed::new();
+        let mut procfile = Procfile::new();
         procfile.insert("foo", "foo_command");
         procfile.insert("bar", "bar_command");
 
@@ -142,7 +142,7 @@ mod test {
 
     #[test]
     fn test_no_processes() {
-        let procfile = ProcfileParsed::new();
+        let procfile = Procfile::new();
         let launch: Launch = procfile.try_into().unwrap();
 
         assert_eq!(launch.processes, vec![]);
@@ -150,7 +150,7 @@ mod test {
 
     #[test]
     fn test_process_order() {
-        let mut procfile = ProcfileParsed::new();
+        let mut procfile = Procfile::new();
         procfile.insert("aaa", "aaa_command");
         procfile.insert("ccc", "ccc_command");
         procfile.insert("bbb", "bbb_command");

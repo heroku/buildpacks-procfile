@@ -1,5 +1,5 @@
 use crate::launch::ProcfileConversionError;
-use crate::procfile::ProcfileError;
+use crate::procfile::ProcfileParsingError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
 
@@ -7,7 +7,7 @@ use libherokubuildpack::log::log_error;
 pub(crate) enum ProcfileBuildpackError {
     CannotReadProcfileContents(std::io::Error),
     ProcfileConversionError(ProcfileConversionError),
-    InvalidProcfile(ProcfileError),
+    InvalidProcfile(ProcfileParsingError),
 }
 
 pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {

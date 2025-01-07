@@ -1,43 +1,22 @@
+//! Contains logic for parsing the `Procfile` format
 use linked_hash_map::LinkedHashMap;
-use winnow::combinator::{alt, eof, repeat_till};
-use winnow::error::{StrContext, StrContextValue};
-use winnow::token::{one_of, take_while};
-use winnow::Parser;
 use winnow::{
-    ascii::space0,
-    combinator::{opt, preceded, repeat, terminated},
-    error::{ContextError, ParseError},
-};
-use winnow::{
-    ascii::{line_ending, till_line_ending},
+    ascii::{line_ending, space0, till_line_ending},
+    combinator::{alt, eof, opt, preceded, repeat, repeat_till, terminated, trace},
+    error::{ContextError, ParseError, StrContext, StrContextValue},
     prelude::*,
+    stream::{Offset, Stream},
+    token::{one_of, take_while},
+    Parser,
 };
-
-#[derive(thiserror::Error, Debug)]
-pub(crate) enum ProcfileError {
-    #[error("Oops {0}")]
-    ParseError(ProcfileParseError),
-}
-
-#[derive(Debug)]
-
-pub(crate) struct ProcfileParseError {
-    message: String,
-    // Byte spans are tracked, rather than line and column.
-    // This makes it easier to operate on programmatically
-    // and doesn't limit us to one definition for column count
-    // which can depend on the output medium and application.
-    span: std::ops::Range<usize>,
-    input: String,
-}
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) struct ProcfileParsed {
+pub(crate) struct Procfile {
     pub(crate) processes: LinkedHashMap<String, String>,
     pub(crate) warnings: Vec<String>,
 }
 
-impl ProcfileParsed {
+impl Procfile {
     #[cfg(test)]
     pub(crate) fn new() -> Self {
         Self {
@@ -52,10 +31,21 @@ impl ProcfileParsed {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
+pub(crate) enum ProcfileParsingError {
+    #[error("{0}")]
+    ParseError(ProcfileParseError),
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct ProcfileParseError {
+    message: String,
+    span: std::ops::Range<usize>,
+    input: String,
+}
+
 impl ProcfileParseError {
     fn from_parse(error: &ParseError<&str, ContextError>, input: &str) -> Self {
-        // The default renderer for `ContextError` is still used but that can be
-        // customized as well to better fit your needs.
         let message = error.inner().to_string();
         let input = input.to_owned();
         let start = error.offset();
@@ -73,19 +63,19 @@ impl ProcfileParseError {
     }
 }
 
-impl std::str::FromStr for ProcfileParsed {
-    type Err = ProcfileError;
+impl std::str::FromStr for Procfile {
+    type Err = ProcfileParsingError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        let (processes, mut warnings) = parse_da_procfile
-            .parse(input)
-            .map_err(|e| ProcfileError::ParseError(ProcfileParseError::from_parse(&e, input)))?;
+        let (processes, mut warnings) = parse_procfile.parse(input).map_err(|e| {
+            ProcfileParsingError::ParseError(ProcfileParseError::from_parse(&e, input))
+        })?;
 
         if processes.is_empty() {
             warnings.push("Empty file, no processes defined".to_string());
         }
 
-        Ok(ProcfileParsed {
+        Ok(Procfile {
             processes,
             warnings,
         })
@@ -107,38 +97,35 @@ impl std::fmt::Display for ProcfileParseError {
     }
 }
 
-fn parse_da_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>, Vec<String>)> {
+/// Returns a mapping of key/values and warnings from a Procfile
+fn parse_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>, Vec<String>)> {
     let mut warnings: Vec<String> = Vec::new();
     let mut key_values: Vec<(String, String)> = Vec::new();
     let mut out = LinkedHashMap::new();
 
     while !input.is_empty() {
-        match parse_strict_key_val(input) {
-            Ok(kv) => {
-                key_values.push(kv);
-            }
-            Err(err) => {
-                println!("ONE");
-                match parse_permissive_key(input).and_then(|original| {
-                    parse_strict_key
-                        .parse_next(
-                            &mut format!("{}:", original.replace('_', "-").to_ascii_lowercase())
-                                .as_str(),
-                        )
-                        .map(|fixed| (original, fixed))
-                }) {
-                    Ok((original, fixed)) => {
-                        let value = preceded(space0, till_newline_or_eof)
-                            .map(std::string::ToString::to_string)
-                            .parse_next(input)?;
+        opt(parse_ignored_lines).parse_next(input)?;
 
-                        warnings.push(format!("Procfile key `{original}` has been corrected to `{fixed}`. Please update your Procfile\n\n{fixed}: {value}"));
-                        key_values.push((fixed, value));
-                    }
-                    Err(_) => return Err(err),
+        let checkpoint = input.checkpoint();
+        // Strict path
+        if let Ok(kv) = parse_key_value(input) {
+            key_values.push(kv);
+        } else {
+            input.reset(&checkpoint);
+            match parse_permissive_key_fixed(input) {
+                Ok((original, fixed)) => {
+                    let value = parse_value.parse_next(input)?;
+
+                    warnings.push(format!("Procfile key `{original}` has been corrected to `{fixed}`. Please update your Procfile\n\n{fixed}: {value}"));
+                    key_values.push((fixed, value));
+                }
+                Err(err) => {
+                    return Err(err);
                 }
             }
         }
+
+        opt(parse_ignored_lines).parse_next(input)?;
     }
 
     for (key, value) in key_values {
@@ -153,37 +140,58 @@ fn parse_da_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>
     Ok((out, warnings))
 }
 
-fn parse_strict_key_val(input: &mut &str) -> PResult<(String, String)> {
-    opt(parse_ignored_lines).parse_next(input)?;
+/// Extracts and transforms a semi-valid key or returns an error
+///
+/// Semi-valid key transformations
+/// - Remove spaces at the start
+/// - Transform `_` to `-`
+/// - Transform uppercase to lowercase characters
+///
+/// Any other values will be invalid.
+///
+/// Returns (original, fixed) tuple on success
+fn parse_permissive_key_fixed(input: &mut &str) -> PResult<(String, String)> {
+    let checkpoint = input.checkpoint();
+    let original = parse_permissive_key(input)?;
 
-    let key: String = parse_strict_key
+    let fixed_input_string = format!("{}:", original.replace('_', "-").to_ascii_lowercase());
+    let mut fixed_input = fixed_input_string.as_str();
+    let before_strict = fixed_input.checkpoint();
+
+    // Remove leading spaces
+    opt(space0::<&str, ContextError<&str>>)
+        .parse_next(&mut fixed_input)
+        .expect("opt cannot fail");
+    parse_key
+        .parse_next(&mut fixed_input)
+        .map(|fixed| (original.to_string(), fixed))
+        .inspect_err(|_| {
+            // In the event of an error, reset the input and determine what character caused the unrecoverable error
+            input.reset(&checkpoint);
+            // Determine how far the input moved before an error was encountered (in number of tokens)
+            let error_offset = fixed_input.checkpoint().offset_from(&before_strict);
+            // Advance the original input that number of tokens
+            for _ in 0..error_offset {
+                input.next_token();
+            }
+        })
+}
+
+/// A strictly validated single `key: value` pair in a `Procfile`
+fn parse_key_value(input: &mut &str) -> PResult<(String, String)> {
+    let key: String = parse_key
         .context(StrContext::Label("key"))
         .parse_next(input)?;
-
-    let val = preceded(space0, till_newline_or_eof)
-        .verify(|value: &str| !value.is_empty())
-        .context(StrContext::Label("value"))
-        .map(std::string::ToString::to_string)
-        .parse_next(input)?;
-    opt(parse_ignored_lines).parse_next(input)?;
+    let val = parse_value.parse_next(input)?;
 
     Ok((key, val))
 }
 
-fn parse_permissive_key(input: &mut &str) -> PResult<String> {
-    trace(
-        "permissive key",
-        terminated(
-            take_while(0.., |c| c != ':').context(StrContext::Expected(
-                StrContextValue::Description(
-                    "Key must contain only lowercase alphanumeric characters (a-z0-9) and `-`",
-                ),
-            )),
-            ':',
-        ),
-    )
-    .parse_next(input)
-    .map(std::string::ToString::to_string)
+/// Takes all characters terminated by `:`
+///
+/// Used for transforming `_` to `-` and emitting warnings
+fn parse_permissive_key<'s>(input: &mut &'s str) -> PResult<&'s str> {
+    terminated(take_while(0.., |c| c != ':'), ':').parse_next(input)
 }
 
 /// Pattern represents a strict Procfile key
@@ -191,61 +199,44 @@ fn parse_permissive_key(input: &mut &str) -> PResult<String> {
 ///
 /// - Must start and end with a lowercase alphanumeric value ('a'..='z' or '0'..='9')
 /// - Inner characters must be lowercase alphanumeric or a dash `-` (underscore `_` and other delimiters are not allowed)
-fn parse_strict_key(input: &mut &str) -> PResult<String> {
+fn parse_key(input: &mut &str) -> PResult<String> {
     alt((
-        terminated(parse_lower_alphanum1, ':').map(|c| c.to_string()),
+        terminated(parse_lower_alphanum1, ':').map(|key| key.to_string()),
         parse_two_or_more_char_key,
     ))
-    .parse_next(input)
-}
-
-fn parse_lower_alphanum1(input: &mut &str) -> PResult<char> {
-    alt((
-        one_of('a'..='z').context(StrContext::Expected(StrContextValue::Description("alpha"))),
-        one_of('0'..='9').context(StrContext::Expected(StrContextValue::Description("num"))),
-    ))
+    .verify(|key: &str| key.chars().count() <= 63)
     .context(StrContext::Expected(StrContextValue::Description(
-        "alphanumeric value (a-z0-9)",
+        "keys contain characters or fewer",
     )))
     .parse_next(input)
 }
 
-use winnow::combinator::trace;
+/// Value part of a `key: value` entry in procfile
+fn parse_value(input: &mut &str) -> PResult<String> {
+    preceded(space0, till_newline_or_eof)
+        .verify(|value: &str| !value.is_empty())
+        .context(StrContext::Label("value"))
+        .map(std::string::ToString::to_string)
+        .parse_next(input)
+}
 
+/// Lowercase alphanumeric value
+fn parse_lower_alphanum1(input: &mut &str) -> PResult<char> {
+    alt((one_of('a'..='z'), one_of('0'..='9')))
+        .context(StrContext::Expected(StrContextValue::Description(
+            "lowercase alphanumeric value (a-z0-9)",
+        )))
+        .parse_next(input)
+}
+
+/// Returns a key from `key: value` pair that has two or more characters
+///
+/// First and last character must be lowercase alphanumeric (a-z0-9)
+/// Middle characters can be lowercase alphanumeric or `-`
 fn parse_two_or_more_char_key(input: &mut &str) -> PResult<String> {
     (
-        parse_lower_alphanum1
-            .context(StrContext::Label("first key character"))
-            .context(StrContext::Expected(StrContextValue::Description(
-                "lowercase alphanumeric (a-z0-9)",
-            ))),
-        repeat_till(
-            0..,
-            alt((parse_lower_alphanum1, '-'))
-                .context(StrContext::Label("inner key character"))
-                .context(StrContext::Expected(StrContextValue::Description(
-                    "lowercase alphanumeric (a-z0-9) or `-`",
-                ))),
-            (
-                parse_lower_alphanum1
-                    .context(StrContext::Label("last key character"))
-                    .context(StrContext::Expected(StrContextValue::Description(
-                        "lowercase alphanumeric (a-z0-9)",
-                    ))),
-                ':'.context(StrContext::Label("key delimiter"))
-                    .context(StrContext::Expected(StrContextValue::Description(
-                        "colon `:`",
-                    ))),
-            )
-                .map(|(last, _delimiter)| last),
-        )
-        .map(|(middle, last): (String, char)| {
-            //
-            let mut tail = String::new();
-            tail.push_str(&middle);
-            tail.push(last);
-            tail
-        }),
+        parse_lower_alphanum1.context(StrContext::Label("first key character")),
+        parse_middle_tail_key_chars,
     )
         .map(|(start, tail)| {
             let mut key = String::new();
@@ -254,6 +245,35 @@ fn parse_two_or_more_char_key(input: &mut &str) -> PResult<String> {
             key
         })
         .parse_next(input)
+}
+
+/// Parses middle characters followed by a valid ending character
+fn parse_middle_tail_key_chars(input: &mut &str) -> PResult<String> {
+    // The `repeat_till` will check the terminator matches before consuming
+    // the first parser, this is needed because the ending character is a subset
+    // of middle characters
+    repeat_till(
+        0..,
+        alt((parse_lower_alphanum1, '-'))
+            .context(StrContext::Label("inner key character"))
+            .context(StrContext::Expected(StrContextValue::Description(
+                "lowercase alphanum (a-z0-9) or `-`",
+            ))),
+        (
+            parse_lower_alphanum1.context(StrContext::Label("last key character")),
+            ':'.context(StrContext::Label("key delimiter"))
+                .context(StrContext::Expected(StrContextValue::CharLiteral(':'))),
+        )
+            .map(|(last, _delimiter)| last),
+    )
+    .map(|(middle, last): (String, char)| {
+        //
+        let mut tail = String::new();
+        tail.push_str(&middle);
+        tail.push(last);
+        tail
+    })
+    .parse_next(input)
 }
 
 /// Returns all characters up to (but not including) the newline or EOF
@@ -270,18 +290,28 @@ fn parse_ignored_lines(input: &mut &'_ str) -> PResult<()> {
     .parse_next(input)
 }
 
+/// A comment line in a Procfile
+///
+/// Starts with `#` optionally preceded with spaces
 fn parse_comment<'s>(input: &mut &'s str) -> PResult<&'s str> {
     preceded(space0, preceded("#", till_line_ending)).parse_next(input)
 }
 
 #[cfg(test)]
 mod tests {
+    use libcnb_test::assert_contains;
+
     use super::*;
+
+    #[test]
+    fn test_parse_lower_alphanum1() {
+        assert!(parse_lower_alphanum1.parse(" ").is_err());
+    }
 
     #[test]
     fn test_replacing_upper_with_lowercase_warning() {
         let input = "IamAvalidKeyButNotStrictly: echo 'done'";
-        let result: ProcfileParsed = input.parse().unwrap();
+        let result: Procfile = input.parse().unwrap();
         assert_eq!(1, result.warnings.len());
         assert_eq!(&"Procfile key `IamAvalidKeyButNotStrictly` has been corrected to `iamavalidkeybutnotstrictly`. Please update your Procfile\n\niamavalidkeybutnotstrictly: echo 'done'".to_string(), result.warnings.last().unwrap());
         assert_eq!(
@@ -293,31 +323,31 @@ mod tests {
     #[test]
     fn test_invalid_start() {
         let input = "-key: echo 'done'";
-        assert!(input.parse::<ProcfileParsed>().is_err());
+        assert!(input.parse::<Procfile>().is_err());
     }
 
     #[test]
     fn test_invalid_end() {
         let input = "key-: echo 'done'";
-        assert!(input.parse::<ProcfileParsed>().is_err());
+        assert!(input.parse::<Procfile>().is_err());
     }
 
     #[test]
     fn test_one_char_key() {
         let input = "a: echo 'done'";
-        input.parse::<ProcfileParsed>().unwrap();
+        input.parse::<Procfile>().unwrap();
     }
 
     #[test]
     fn test_two_char_key() {
         let input = "aa: echo 'done'";
-        input.parse::<ProcfileParsed>().unwrap();
+        input.parse::<Procfile>().unwrap();
     }
 
     #[test]
-    fn test_strictly_valid_one_key_val() {
+    fn test_strictly_valid_one_key_val_combo() {
         let input = "iamastrictly-validkey: echo 'done'";
-        let result: ProcfileParsed = input.parse().unwrap();
+        let result: Procfile = input.parse().unwrap();
         assert_eq!(0, result.warnings.len());
         assert_eq!(
             "echo 'done'",
@@ -359,14 +389,14 @@ mod tests {
 
     #[test]
     fn process_key_value() {
-        let (key, val) = parse_strict_key_val.parse("web: rails s").unwrap();
+        let (key, val) = parse_key_value.parse("web: rails s").unwrap();
         assert_eq!("web", key);
         assert_eq!("rails s", val);
     }
 
     #[test]
     fn test_empty_parse_procfile() {
-        let procfile = "".parse::<ProcfileParsed>().unwrap();
+        let procfile = "".parse::<Procfile>().unwrap();
         assert_eq!(0, procfile.processes.len());
         assert_eq!(
             &"Empty file, no processes defined".to_string(),
@@ -377,26 +407,20 @@ mod tests {
 
     #[test]
     fn test_valid_parse_procfile() {
-        let mut expected_procfile = ProcfileParsed {
-            processes: LinkedHashMap::new(),
-            warnings: Vec::new(),
-        };
+        let mut expected_procfile = Procfile::new();
         expected_procfile
             .processes
             .insert("web".to_string(), "rails s".to_string());
 
         assert_eq!(
             expected_procfile,
-            "web: rails s".parse::<ProcfileParsed>().unwrap()
+            "web: rails s".parse::<Procfile>().unwrap()
         );
     }
 
     #[test]
     fn test_multiple_valid_parse_procfile() {
-        let mut expected_procfile = ProcfileParsed {
-            processes: LinkedHashMap::new(),
-            warnings: Vec::new(),
-        };
+        let mut expected_procfile = Procfile::new();
         expected_procfile
             .processes
             .insert("web".to_string(), "rails s".to_string());
@@ -407,23 +431,69 @@ mod tests {
         assert_eq!(
             expected_procfile,
             "web: rails s\nworker: rake sidekiq"
-                .parse::<ProcfileParsed>()
+                .parse::<Procfile>()
                 .unwrap(),
         );
     }
 
     #[test]
     fn test_nonsense_procfile() {
-        assert!("&&&&&".parse::<ProcfileParsed>().is_err());
+        assert!("&&&&&".parse::<Procfile>().is_err());
     }
 
     #[test]
     fn test_missing_command_parse_procfile() {
-        assert!("web:".parse::<ProcfileParsed>().is_err());
+        assert!("web:".parse::<Procfile>().is_err());
     }
 
     #[test]
     fn test_missing_name_parse_procfile() {
-        assert!(": rails -s".parse::<ProcfileParsed>().is_err());
+        assert!(": rails -s".parse::<Procfile>().is_err());
+    }
+
+    #[test]
+    fn not_yaml_format_but_still_valid() {
+        let input = r"
+# Comment
+
+   web: echo foo: bar
+";
+        let procfile = input.parse::<Procfile>().unwrap();
+        assert_eq!(1, procfile.warnings.len());
+    }
+
+    #[test]
+    fn invalid_procfile_key_points_at_the_correct_location_of_the_fatal_error() {
+        let input = "is_w.e.b: echo hello";
+        let result = input.parse::<Procfile>();
+        assert!(result.is_err());
+        match result {
+            Ok(_) => panic!("Expected error, got {result:?}"),
+            Err(e) => assert_contains!(
+                &format!("{e}").trim(),
+                r"
+1 | is_w.e.b: echo hello
+  |     ^
+"
+                .trim()
+            ),
+        }
+    }
+
+    #[test]
+    fn max_length_key_is_63_chars() {
+        let input = r"
+# 63 chars ---------------------------------------------------v
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: fonz
+";
+        let result = input.parse::<Procfile>();
+        assert!(result.is_ok());
+
+        let input = r"
+# 64 chars ----------------------------------------------------v
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: fonz
+";
+        let result = input.parse::<Procfile>();
+        assert!(result.is_err());
     }
 }
