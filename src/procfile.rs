@@ -1,8 +1,7 @@
 //! Contains logic for parsing the `Procfile` format
-use std::fmt::Display;
-
 use bullet_stream::style;
 use linked_hash_map::LinkedHashMap;
+use std::fmt::Display;
 use winnow::{
     ascii::{line_ending, space0, till_line_ending},
     combinator::{alt, eof, opt, preceded, repeat, repeat_till, terminated, trace},
@@ -313,10 +312,9 @@ fn parse_comment<'s>(input: &mut &'s str) -> PResult<&'s str> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use bullet_stream::strip_ansi;
     use libcnb_test::assert_contains;
-
-    use super::*;
 
     #[test]
     fn test_parse_lower_alphanum1() {
