@@ -27,16 +27,15 @@ The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SH
   - An empty line MUST be zero or more spaces followed by a line ending or end of file (EOF).
 - Key/Value pairs
   - A line MAY contain a key/value pair where the key represents the name of a process and the value represents a command
+  - A key MUST be separated from its value by a colon (`:`) followed by zero or more spaces.
+  - Duplicate keys MUST be allowed and the last entry MUST take precedence. A warning SHOULD be issued.
 - Key
   - A key's first and last character MUST be a lowercase alphanumeric (a-z0-9) character (but not `-`).
   - All other key (middle) characters MUST be lowercase alphanumeric (a-z0-9) characters or hyphen `-`.
   - Key length MUST be within the range `1..=63`
   - An implementation MAY accept `_` as a middle character provided it converts it to `-` and issues a warning.
   - An implementation MAY accept an uppercase character provided it is converted to lowercase characters and issues a warning.
-  - A key MAY begin with zero or more spaces provided they are not included in the return key.
-  - A colon MUST terminate a key `:` (the colon is not included in the key return value).
+  - A key MAY be preceded with zero or more spaces provided they are not included in the return key and a warning is issued.
 - Value
-  - A value MUST be proceeded by a key.
-  - A value MAY begin with 0 or more spaces.
   - A value MUST contain 1 or more non-whitespace characters.
-  - A value MUST terminated by a newline or EOF.
+  - A value MUST be terminated by a newline or EOF.
