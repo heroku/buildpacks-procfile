@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Regex based parser has been removed in favor of a `winnow` based parser combinator, the format is now more strict. See [SPEC.md](spec.md) for more details. ([#255](https://github.com/heroku/buildpacks-procfile/pull/255))
+    - Keys starting with spaces now emit a warning
+    - Underscore key characters (`_`) are now converted to hyphens (`-`) and emit a warning
+    - Uppercase key characters are now converted to lowercase and emit a warning
+    - Invalid keys now error, previously they were ignored
+
 ## [3.2.0] - 2024-12-20
 
 ### Changed
