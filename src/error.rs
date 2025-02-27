@@ -23,7 +23,7 @@ pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
                 Underlying cause was: {io_error}
             "});
         }
-        ProcfileBuildpackError::ProcfileParsingError(parsing_error) =>
+        ProcfileBuildpackError::ProcfileParsingError(parsing_error) => {
             build_output.error(formatdoc! {"
                 Invalid Procfile format
 
@@ -32,7 +32,8 @@ pub(crate) fn error_handler(buildpack_error: ProcfileBuildpackError) {
                 To fix this problem please correct the following error and commit the results to git:
 
                 {parsing_error}
-            "}),
+            "});
+        }
         ProcfileBuildpackError::ProcfileConversionError(conversion_error) => match conversion_error
         {
             ProcfileConversionError::InvalidProcessType(libcnb_error) => {
