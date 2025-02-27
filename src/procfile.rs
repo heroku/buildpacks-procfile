@@ -6,7 +6,6 @@ use winnow::{
     ascii::{line_ending, space0, till_line_ending},
     combinator::{alt, eof, opt, preceded, repeat, repeat_till, terminated, trace},
     error::{ContextError, ParseError, StrContext, StrContextValue},
-    prelude::*,
     stream::{Offset, Stream},
     token::{one_of, take_while},
     Parser,
@@ -107,7 +106,9 @@ impl std::fmt::Display for ProcfileParseError {
 }
 
 /// Returns a mapping of key/values and warnings from a Procfile
-fn parse_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>, Vec<String>)> {
+fn parse_procfile(
+    input: &mut &str,
+) -> winnow::Result<(LinkedHashMap<String, String>, Vec<String>)> {
     let mut warnings: Vec<String> = Vec::new();
     let mut key_values: Vec<(String, String)> = Vec::new();
     let mut out = LinkedHashMap::new();
@@ -163,7 +164,7 @@ fn parse_procfile(input: &mut &str) -> PResult<(LinkedHashMap<String, String>, V
 /// Any other values will be invalid.
 ///
 /// Returns (original, fixed) tuple on success
-fn parse_permissive_key_fixed(input: &mut &str) -> PResult<(String, String)> {
+fn parse_permissive_key_fixed(input: &mut &str) -> winnow::Result<(String, String)> {
     let checkpoint = input.checkpoint();
     let original = parse_permissive_key(input)?;
 
@@ -191,7 +192,7 @@ fn parse_permissive_key_fixed(input: &mut &str) -> PResult<(String, String)> {
 }
 
 /// A strictly validated single `key: value` pair in a `Procfile`
-fn parse_key_value(input: &mut &str) -> PResult<(String, String)> {
+fn parse_key_value(input: &mut &str) -> winnow::Result<(String, String)> {
     let key: String = parse_key
         .context(StrContext::Label("key"))
         .parse_next(input)?;
@@ -203,7 +204,7 @@ fn parse_key_value(input: &mut &str) -> PResult<(String, String)> {
 /// Takes all characters terminated by `:`
 ///
 /// Used for transforming `_` to `-` and emitting warnings
-fn parse_permissive_key<'s>(input: &mut &'s str) -> PResult<&'s str> {
+fn parse_permissive_key<'s>(input: &mut &'s str) -> winnow::Result<&'s str> {
     terminated(take_while(0.., |c| c != ':'), ':').parse_next(input)
 }
 
@@ -212,7 +213,7 @@ fn parse_permissive_key<'s>(input: &mut &'s str) -> PResult<&'s str> {
 ///
 /// - Must start and end with a lowercase alphanumeric value ('a'..='z' or '0'..='9')
 /// - Inner characters must be lowercase alphanumeric or a dash `-` (underscore `_` and other delimiters are not allowed)
-fn parse_key(input: &mut &str) -> PResult<String> {
+fn parse_key(input: &mut &str) -> winnow::Result<String> {
     alt((
         terminated(parse_lower_alphanum1, ':').map(|key| key.to_string()),
         parse_two_or_more_char_key,
@@ -225,7 +226,7 @@ fn parse_key(input: &mut &str) -> PResult<String> {
 }
 
 /// Value part of a `key: value` entry in procfile
-fn parse_value(input: &mut &str) -> PResult<String> {
+fn parse_value(input: &mut &str) -> winnow::Result<String> {
     preceded(space0, till_newline_or_eof)
         .verify(|value: &str| !value.is_empty())
         .context(StrContext::Label("value"))
@@ -234,7 +235,7 @@ fn parse_value(input: &mut &str) -> PResult<String> {
 }
 
 /// Lowercase alphanumeric value
-fn parse_lower_alphanum1(input: &mut &str) -> PResult<char> {
+fn parse_lower_alphanum1(input: &mut &str) -> winnow::Result<char> {
     alt((one_of('a'..='z'), one_of('0'..='9')))
         .context(StrContext::Expected(StrContextValue::Description(
             "lowercase alphanumeric value (a-z0-9)",
@@ -246,7 +247,7 @@ fn parse_lower_alphanum1(input: &mut &str) -> PResult<char> {
 ///
 /// First and last character must be lowercase alphanumeric (a-z0-9)
 /// Middle characters can be lowercase alphanumeric or `-`
-fn parse_two_or_more_char_key(input: &mut &str) -> PResult<String> {
+fn parse_two_or_more_char_key(input: &mut &str) -> winnow::Result<String> {
     (
         parse_lower_alphanum1.context(StrContext::Label("first key character")),
         parse_middle_tail_key_chars,
@@ -261,7 +262,7 @@ fn parse_two_or_more_char_key(input: &mut &str) -> PResult<String> {
 }
 
 /// Parses middle characters followed by a valid ending character
-fn parse_middle_tail_key_chars(input: &mut &str) -> PResult<String> {
+fn parse_middle_tail_key_chars(input: &mut &str) -> winnow::Result<String> {
     // The `repeat_till` will check the terminator matches before consuming
     // the first parser, this is needed because the ending character is a subset
     // of middle characters
@@ -290,12 +291,12 @@ fn parse_middle_tail_key_chars(input: &mut &str) -> PResult<String> {
 }
 
 /// Returns all characters up to (but not including) the newline or EOF
-fn till_newline_or_eof<'s>(input: &mut &'s str) -> PResult<&'s str> {
+fn till_newline_or_eof<'s>(input: &mut &'s str) -> winnow::Result<&'s str> {
     terminated(till_line_ending, alt((line_ending, eof))).parse_next(input)
 }
 
 /// Consume comments and empty lines
-fn parse_ignored_lines(input: &mut &'_ str) -> PResult<()> {
+fn parse_ignored_lines(input: &mut &'_ str) -> winnow::Result<()> {
     trace(
         "ignored lines",
         repeat(1.., alt((parse_comment, (terminated(space0, line_ending))))),
@@ -306,7 +307,7 @@ fn parse_ignored_lines(input: &mut &'_ str) -> PResult<()> {
 /// A comment line in a Procfile
 ///
 /// Starts with `#` optionally preceded with spaces
-fn parse_comment<'s>(input: &mut &'s str) -> PResult<&'s str> {
+fn parse_comment<'s>(input: &mut &'s str) -> winnow::Result<&'s str> {
     preceded(space0, preceded("#", till_line_ending)).parse_next(input)
 }
 

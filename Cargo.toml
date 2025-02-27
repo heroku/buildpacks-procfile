@@ -14,14 +14,14 @@ pedantic = { level = "warn", priority = -1 }
 unwrap_used = "warn"
 
 [dependencies]
-annotate-snippets = "0.11.5"
-bullet_stream = "0.3"
+annotate-snippets = "0.11"
+bullet_stream = "0.7"
 fs-err = "3"
 indoc = "2"
-libcnb = { version = "0.26", features = ["trace"] }
-libherokubuildpack = { version = "0.26", default-features = false, features = ["error", "log"] }
+libcnb = { version = "0.27", features = ["trace"] }
+libherokubuildpack = { version = "0.27", default-features = false, features = ["error", "log"] }
 linked-hash-map = "0.5"
-winnow = "0.6.22"
+winnow = "0.7"
 
 [dev-dependencies]
-libcnb-test = "0.26"
+libcnb-test = "0.27"
