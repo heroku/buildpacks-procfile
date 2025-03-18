@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated libcnb to 0.28.0, which includes the switch to the `tracing` crate for OpenTelemetry. ([#266](https://github.com/heroku/buildpacks-procfile/pull/266))
+
 ## [4.1.0] - 2025-02-27
 
 ### Changed
