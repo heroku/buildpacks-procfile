@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.1] - 2025-04-03
+
 ### Changed
 
 - Updated libcnb to 0.28.1, which includes tracing improvements/fixes. ([#269](https://github.com/heroku/buildpacks-procfile/pull/269))
@@ -129,7 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of Rust procfile buildpack, the old Go buildpack is now archived.
 - Re-write logic of Procfile parsing to match Heroku's behavior, which has different behavior from the Go version (that assumed that a Procfile was YAML syntax).
 
-[unreleased]: https://github.com/heroku/buildpacks-procfile/compare/v4.2.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-procfile/compare/v4.2.1...HEAD
+[4.2.1]: https://github.com/heroku/buildpacks-procfile/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/heroku/buildpacks-procfile/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/heroku/buildpacks-procfile/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/heroku/buildpacks-procfile/compare/v3.2.0...v4.0.0
