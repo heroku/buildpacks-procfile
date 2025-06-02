@@ -15,13 +15,13 @@ unwrap_used = "warn"
 
 [dependencies]
 annotate-snippets = "0.11"
-bullet_stream = "0.7"
+bullet_stream = "0.8"
 fs-err = "3"
 indoc = "2"
-libcnb = { version = "0.28", features = ["trace"] }
-libherokubuildpack = { version = "0.28", default-features = false, features = ["error", "log"] }
+libcnb = { version = "0.29", features = ["trace"] }
+libherokubuildpack = { version = "0.29", default-features = false, features = ["error", "log"] }
 linked-hash-map = "0.5"
 winnow = "0.7"
 
 [dev-dependencies]
-libcnb-test = "0.28"
+libcnb-test = "0.29"
