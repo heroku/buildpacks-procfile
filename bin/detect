@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# CNB Required Environment Variables
+: "${CNB_PLATFORM_API:?}"
+: "${CNB_BP_DIR:?}"
+: "${CNB_BUILD_PLAN_PATH:?}"
+
+# Source directory of this script
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Install dependencies if needed
+"$DIR/install-deps"
+
+# Execute the Ruby buildpack script
+cd "$CNB_BP_DIR"
+exec ruby bin/buildpack detect "$@"
+if [ ! -f "Gemfile.lock" ]; then
+    gem install bundler
+    bundle install
+fi
+
+# Execute the Ruby buildpack script
+exec ruby $(dirname $0)/buildpack "$@"

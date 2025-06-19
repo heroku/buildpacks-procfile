@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+install_ruby() {
+    # Check if apt-get is available (Debian/Ubuntu)
+    if command -v apt-get &>/dev/null; then
+        apt-get update && apt-get install -y ruby
+    # Check if yum is available (RHEL/CentOS)
+    elif command -v yum &>/dev/null; then
+        yum install -y ruby
+    else
+        echo "Error: No supported package manager found"
+        exit 1
+    fi
+}
+
+install_gems() {
+    gem install bundler --no-document
+    bundle install --deployment --without development test
+}
+
+# Main installation logic
+if ! command -v ruby &>/dev/null; then
+    install_ruby
+fi
+
+cd "$(dirname "$(dirname "$0")")"
+if [ ! -f "Gemfile.lock" ]; then
+    install_gems
+fi

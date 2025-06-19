@@ -1,0 +1,19 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    json (2.12.2)
+    minitest (5.25.5)
+    parslet (2.0.0)
+    toml (0.3.0)
+      parslet (>= 1.8.0, < 3.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json
+  minitest (~> 5.14)
+  toml (~> 0.3.0)
+
+BUNDLED WITH
+   2.1.4

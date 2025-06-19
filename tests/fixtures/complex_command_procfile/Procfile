@@ -1,2 +1,0 @@
-# Tests use of compound bash commands, both quote styles, nested quoting and variable interpolation.
-web: echo 'this is the "web" process!' && echo "\"PORT\" is set to: '${PORT}'"

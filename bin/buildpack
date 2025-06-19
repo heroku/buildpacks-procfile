@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/buildpack'
+
+# CNB Buildpack Interface
+# See: https://buildpacks.io/docs/reference/spec/buildpack-api/
+
+buildpack = ProcfileBuildpack.new
+
+case ARGV[0]
+when "detect"
+  app_dir = ARGV[1]
+  buildpack.detect(app_dir)
+when "build"
+  layers_dir = ARGV[1]
+  platform_dir = ARGV[2]
+  app_dir = ARGV[3]
+  buildpack.build(layers_dir, platform_dir, app_dir)
+else
+  puts "Unknown command: #{ARGV[0]}"
+  puts "Usage: #{$0} detect <app_dir>"
+  puts "       #{$0} build <layers_dir> <platform_dir> <app_dir>"
+  exit 1
+end

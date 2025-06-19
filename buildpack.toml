@@ -5,14 +5,46 @@ id = "neeto-deploy/procfile"
 version = "3.1.2"
 name = "neetodeploy Procfile"
 homepage = "https://github.com/bigbinary/buildpacks-procfile"
-description = "Heroku's Procfile buildpack."
-keywords = ["procfile", "processes", "heroku"]
+description = "A Cloud Native Buildpack that processes Procfile declarations"
+keywords = ["procfile", "processes"]
+clear-env = false
+# This ensures the procfile buildpack runs after language buildpacks
+order-group = 100
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
+# Support all stacks for maximum compatibility
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"
+
+[[stacks]]
+id = "io.paketo.stacks.tiny"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-22"
+
 [[stacks]]
 id = "*"
+
+[metadata]
+include-files = [
+    "bin/build",
+    "bin/detect",
+    "bin/buildpack",
+    "bin/install-deps",
+    "lib/buildpack.rb",
+    "lib/procfile.rb",
+    "buildpack.toml",
+    "Gemfile",
+    "Gemfile.lock",
+]
+
+[metadata.configuration]
+default-process = { default = "web" }
 
 [[targets]]
 os = "linux"
@@ -21,6 +53,3 @@ arch = "amd64"
 [[targets]]
 os = "linux"
 arch = "arm64"
-
-[metadata.release]
-image = { repository = "docker.io/heroku/buildpack-procfile" }
