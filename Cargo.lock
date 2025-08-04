@@ -125,9 +125,9 @@ dependencies = [
 
 [[package]]
 name = "bullet_stream"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "848ad8d26dc3efb24babe9a899046c1c69a1134642ff74a00538b941cb79773e"
+checksum = "d0406178c12a122b39c437e4e8776f7af3a1c5e9eab0c766c31830c9f17a9ded"
 dependencies = [
  "fun_run",
 ]
@@ -1496,9 +1496,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.7.11"
+version = "0.7.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74c7b26e3480b707944fc872477815d29a8e429d2f93a1ce000f5fa84a15cbcd"
+checksum = "f3edebf492c8125044983378ecb5766203ad3b4c2f7a922bd7dd207f6d443e95"
 dependencies = [
  "memchr",
 ]

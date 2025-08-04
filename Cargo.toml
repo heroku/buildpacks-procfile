@@ -15,7 +15,7 @@ unwrap_used = "warn"
 
 [dependencies]
 annotate-snippets = "0.11"
-bullet_stream = "0.10"
+bullet_stream = "0.11"
 fs-err = "3"
 indoc = "2"
 libcnb = { version = "0.29", features = ["trace"] }
