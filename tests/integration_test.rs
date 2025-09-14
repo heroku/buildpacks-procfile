@@ -6,7 +6,7 @@
 
 use indoc::indoc;
 use libcnb_test::{
-    assert_contains, assert_empty, BuildConfig, ContainerConfig, PackResult, TestRunner,
+    BuildConfig, ContainerConfig, PackResult, TestRunner, assert_contains, assert_empty,
 };
 
 #[test]

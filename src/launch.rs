@@ -23,10 +23,10 @@ impl TryFrom<Procfile> for Launch {
             });
         }
 
-        if launch.processes.len() == 1 {
-            if let Some(process) = launch.processes.first_mut() {
-                process.default = true;
-            }
+        if launch.processes.len() == 1
+            && let Some(process) = launch.processes.first_mut()
+        {
+            process.default = true;
         }
 
         Ok(launch)

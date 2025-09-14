@@ -2,13 +2,13 @@ mod error;
 mod launch;
 mod procfile;
 
-use crate::error::{error_handler, ProcfileBuildpackError};
+use crate::error::{ProcfileBuildpackError, error_handler};
 use crate::procfile::Procfile;
-use bullet_stream::{style, Print};
+use bullet_stream::{Print, style};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::{buildpack_main, Buildpack};
+use libcnb::{Buildpack, buildpack_main};
 use std::io::stdout;
 use std::path::Path;
 
