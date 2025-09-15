@@ -3,12 +3,12 @@ use bullet_stream::style;
 use linked_hash_map::LinkedHashMap;
 use std::fmt::Display;
 use winnow::{
+    Parser,
     ascii::{line_ending, space0, till_line_ending},
     combinator::{alt, eof, opt, preceded, repeat, repeat_till, terminated, trace},
     error::{ContextError, ParseError, StrContext, StrContextValue},
     stream::{Offset, Stream},
     token::{one_of, take_while},
-    Parser,
 };
 
 #[derive(Debug, Eq, PartialEq)]
