@@ -91,17 +91,15 @@ impl std::str::FromStr for Procfile {
 }
 
 impl std::fmt::Display for ProcfileParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let message = annotate_snippets::Level::Error
-            .title(&self.message)
-            .snippet(
-                annotate_snippets::Snippet::source(&self.input)
-                    .fold(true)
-                    .annotation(annotate_snippets::Level::Error.span(self.span.clone())),
-            );
-        let renderer = annotate_snippets::Renderer::plain();
-        let result = renderer.render(message);
-        result.fmt(f)
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use annotate_snippets::{AnnotationKind, Level, Renderer, Snippet};
+
+        let report = &[Level::ERROR.primary_title(&self.message).element(
+            Snippet::source(&self.input)
+                .annotation(AnnotationKind::Primary.span(self.span.clone())),
+        )];
+
+        formatter.write_str(&Renderer::plain().render(report))
     }
 }
 
