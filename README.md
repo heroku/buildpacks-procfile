@@ -9,7 +9,7 @@ for applications that use a Procfile to declare process types. It replicates the
 from builds on the Heroku Platform.
 
 > [!IMPORTANT]
-> This is a [Cloud Native Buildpack][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project, which is in preview.
+> This is a [Cloud Native Buildpack][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project.
 
 ## Usage
 
