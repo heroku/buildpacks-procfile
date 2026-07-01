@@ -18,7 +18,7 @@ annotate-snippets = "0.12"
 bullet_stream = "0.11"
 fs-err = "3"
 indoc = "2"
-libcnb = { version = "0.30", features = ["trace"] }
+libcnb = { version = "0.31", features = ["trace"] }
 libherokubuildpack = { version = "0.30", default-features = false, features = ["error", "log"] }
 linked-hash-map = "0.5"
 winnow = "1"
