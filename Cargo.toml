@@ -24,4 +24,4 @@ linked-hash-map = "0.5"
 winnow = "1"
 
 [dev-dependencies]
-libcnb-test = "0.30"
+libcnb-test = "0.31"
